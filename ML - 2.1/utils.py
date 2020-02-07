@@ -120,8 +120,16 @@ def get_data(hour_num=0,
         data['wind_direction'] = np.sin(data['wind_direction'])
     elif transform=='cos':
         data['wind_direction'] = np.cos(data['wind_direction'])
+    elif transform=='ws*cos(wd)':
+        data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
+        data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
+        columns = ['ws*cos(wd)']
+    elif transform=='ws*sin(wd)':
+        data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
+        data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
+        columns = ['ws*sin(wd)']
     else:
-        print('transform can only be None or sin or cos ')
+        return print('ERROR: \'transform\' can only be None or \'sin\' or \'cos\' or \'ws*cos(wd)\'\n')
         
     Train = Data_Extend_fun(Data=data.iloc[train_index[0]:train_index[1]],
                             hour_num=hour_num,columns = columns)

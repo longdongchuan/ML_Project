@@ -26,23 +26,27 @@
 - [x] reservoir computing+kernel ridge model（**esn_kernel_ridge_learner**）
 - [x] reservoir computing+suppor vecor regrssion（**esn_linear_svr_learner**）
 
-1. linear_svr_learner（0.0245-->0.0189）
-2. esn_linear_svr_learner（0.0275-->0.0216）
-3. default_linear_learner（0.0312-->0.0249）
-4. default_tree_learner（0.04029-->0.0408）
-5. esn_kernel_ridge_learner（0.0442-->0.0248）
-6. kernel_ridge_learner（0.0478-->0.03400）
-7. esn_ridge_learner（0.0482-->0.04177）
+| model \ MSE                | ws+wd         | cos(wd)       | sin(wd)    | cos(wd)-3 | cos(wd)-6 |
+| -------------------------- | ------------- | ------------- | ---------- | --------- | --------- |
+| default_linear_learner     | 3. 0.0312     | 4. 0.0249     | 0.0369     | 0.0371    | 0.0368    |
+| default_tree_learner       | 4. 0.0403     | 6. 0.0408     | 0.0421     | 0.4089    | 0.0423    |
+| **linear_svr_learner**     | **1. 0.0245** | **1. 0.0189** | **0.0198** | 0.0593    | 0.0594    |
+| kernel_ridge_learner       | 6. 0.0478     | 5. 0.0340     |            |           |           |
+| esn_ridge_learner          | 7. 0.0482     | 7. 0.0417     | 0.0521     | 0.0379    | 0.9389    |
+| esn_kernel_svr_learner     | 5. 0.0442     | 3. 0.0248     | .          | .         | .         |
+| **esn_linear_svr_learner** | **2. 0.0275** | **2. 0.0216** | **0.0171** | 0.0368    | 无法收敛  |
+
+| model \ MSE            | ws*cos(wd) | ws*sin(wd) | ws*cos(wd)-3 |      |      |
+| ---------------------- | ---------- | ---------- | ------------ | ---- | ---- |
+| default_linear_learner | 0.0633     | 0.0632     | 0.0593       |      |      |
+| default_tree_learner   | 0.0633     | 0.0593     | 0.0528       |      |      |
+| linear_svr_learner     | 0.0593     | 0.0592     | 0.0593       |      |      |
+| kernel_ridge_learner   |            |            |              |      |      |
+| **esn_ridge_learner**  | **0.0263** | **0.0258** | **0.0276**   |      |      |
+| esn_kernel_svr_learner | .          | .          | .            |      |      |
+| esn_linear_svr_learner | 0.0594     | 0.0593     | 0.0594       |      |      |
 
 
-
-1. linear_svr_learner（0.0245-->0.0189）
-2. esn_linear_svr_learner（0.0275-->0.0216）
-3. esn_kernel_ridge_learner（0.0442-->0.0248）
-4. default_linear_learner（0.0312-->0.0249）
-5. kernel_ridge_learner（0.0478-->0.03400）
-6. default_tree_learner（0.04029-->0.0408）
-7. esn_ridge_learner（0.0482-->0.04177）
 
 ---
 
