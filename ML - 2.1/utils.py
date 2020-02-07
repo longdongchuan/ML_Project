@@ -51,7 +51,7 @@ def plot_module1(year, month, day, figsize=(14,16), save_fig=False, close_fig=Tr
     if close_fig:
         plt.close()
 
-        
+
 def plot_module2(year, month, day, figsize=(14,14), save_fig=False, close_fig=True):
     path = '/Users/apple/Documents/ML_Project/ML - 2.1/data/国际西班牙数据.csv'
     df = load_data(path, add_time=True, describe=False)
@@ -101,6 +101,7 @@ def Data_Extend_fun(Data, hour_num, columns):
     else:
         print('ERROR: hour num cannot be negative!')
 
+
 from sklearn.preprocessing import MinMaxScaler
 def get_data(hour_num=0, 
              columns=['wind_speed', 'wind_direction', 'wind_power'], 
@@ -146,7 +147,7 @@ def get_data(hour_num=0,
         Y_train = Y_Scaler.fit_transform(Y_train.values.reshape(-1,1)).reshape(len(Y_train),)
         Y_test = Y_Scaler.transform(Y_test.values.reshape(-1,1)).reshape(len(Y_test),)
     
-    print('get_data(hour_num={}, transform={}, drop_time={}, scale={})\n'\
+    print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
         .format(hour_num, transform, drop_time, scale))
 
     return X_train, X_test, Y_train, Y_test
