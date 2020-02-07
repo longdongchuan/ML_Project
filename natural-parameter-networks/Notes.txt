@@ -1,0 +1,2 @@
+自己下载的官方npn pytorch 版
+运行$ sh npn.sh 时出错
