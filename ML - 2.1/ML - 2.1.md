@@ -26,13 +26,23 @@
 - [x] reservoir computing+kernel ridge model（**esn_kernel_ridge_learner**）
 - [x] reservoir computing+suppor vecor regrssion（**esn_linear_svr_learner**）
 
-1. linear_svr_learner（0.0245）
-2. esn_linear_svr_learner（0.0275）
-3. default_linear_learner（0.0312）
-4. default_tree_learner（0.0425）
-5. esn_kernel_ridge_learner（0.0442）
-6. kernel_ridge_learner（0.0478）
-7. esn_ridge_learner（0.0482）
+1. linear_svr_learner（0.0245-->0.0189）
+2. esn_linear_svr_learner（0.0275-->0.0216）
+3. default_linear_learner（0.0312-->0.0249）
+4. default_tree_learner（0.04029-->0.0408）
+5. esn_kernel_ridge_learner（0.0442-->0.0248）
+6. kernel_ridge_learner（0.0478-->0.03400）
+7. esn_ridge_learner（0.0482-->0.04177）
+
+
+
+1. linear_svr_learner（0.0245-->0.0189）
+2. esn_linear_svr_learner（0.0275-->0.0216）
+3. esn_kernel_ridge_learner（0.0442-->0.0248）
+4. default_linear_learner（0.0312-->0.0249）
+5. kernel_ridge_learner（0.0478-->0.03400）
+6. default_tree_learner（0.04029-->0.0408）
+7. esn_ridge_learner（0.0482-->0.04177）
 
 ---
 
