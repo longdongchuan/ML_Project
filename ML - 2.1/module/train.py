@@ -1,4 +1,4 @@
-from utils import *
+from module.utils import *
 from ngboost.learners import *
 
 X_train, X_test, Y_train, Y_test = get_data(hour_num=0, transform='ws*sin(wd)',

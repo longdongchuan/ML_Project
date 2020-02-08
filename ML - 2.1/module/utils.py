@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
 def load_data(path, add_time=True, describe=True):
     data = pd.read_csv(path)
     if describe:
@@ -111,15 +113,25 @@ def get_data(hour_num=0,
              drop_time=True,
              scale=True,
              path = '/Users/apple/Documents/ML_Project/ML - 2.1/Data/国际西班牙数据.csv'):
-
+    # transform: can be one of [none, 'sin', 'cos', 'sin+cos', 
+    #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     data= load_data(path, add_time=True, describe=False)
 
     if transform==None:
         pass
     elif transform=='sin':
-        data['wind_direction'] = np.sin(data['wind_direction'])
+        data['sin(wd)'] = np.sin(data['wind_direction'])
+        data.drop(['wind_direction'], axis=1, inplace=True)
+        columns = ['wind_speed', 'sin(wd)', 'wind_power']
     elif transform=='cos':
-        data['wind_direction'] = np.cos(data['wind_direction'])
+        data['cos(wd)'] = np.cos(data['wind_direction'])
+        data.drop(['wind_direction'], axis=1, inplace=True)
+        columns = ['wind_speed', 'cos(wd)', 'wind_power']
+    elif transform=='sin+cos':
+        data['sin(wd)'] = np.sin(data['wind_direction'])
+        data['cos(wd)'] = np.cos(data['wind_direction'])
+        data.drop(['wind_direction'], axis=1, inplace=True)
+        columns = ['wind_speed', 'sin(wd)', 'cos(wd)', 'wind_power']
     elif transform=='ws*cos(wd)':
         data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
         data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
@@ -128,8 +140,13 @@ def get_data(hour_num=0,
         data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
         data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
         columns = ['ws*sin(wd)']
+    elif transform=='ws*sin(wd)+ws*cos(wd)':
+        data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
+        data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
+        data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
+        columns = ['ws*sin(wd)', 'ws*cos(wd)']
     else:
-        return print('ERROR: \'transform\' can only be None or \'sin\' or \'cos\' or \'ws*cos(wd)\'\n')
+        return print('ERROR: \'transform\' can only be [none, \'sin\', \'cos\', \'sin+cos\', \'ws*sin(wd)\', \'ws*cos(wd)\', \'ws*sin(wd)+ws*cos(wd)\']\n')
         
     Train = Data_Extend_fun(Data=data.iloc[train_index[0]:train_index[1]],
                             hour_num=hour_num,columns = columns)
@@ -152,8 +169,14 @@ def get_data(hour_num=0,
         X_test = pd.DataFrame(X_Scaler.transform(X_test), columns=X_columns)
 
         Y_Scaler = MinMaxScaler()
-        Y_train = Y_Scaler.fit_transform(Y_train.values.reshape(-1,1)).reshape(len(Y_train),)
-        Y_test = Y_Scaler.transform(Y_test.values.reshape(-1,1)).reshape(len(Y_test),)
+        Y_train_index = Y_train.index
+        Y_test_index = Y_test.index
+        Y_train = pd.Series(Y_Scaler.fit_transform(Y_train.values.reshape(-1,1)).reshape(len(Y_train),), 
+                            index=Y_train.index)
+        Y_train.name = 'Y_train'
+        Y_test = pd.Series(Y_Scaler.transform(Y_test.values.reshape(-1,1)).reshape(len(Y_test),),
+                            index=Y_test.index)
+        Y_test.name = 'Y_test'
     
     print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
         .format(hour_num, transform, drop_time, scale))
@@ -163,11 +186,15 @@ def get_data(hour_num=0,
 
 from ngboost import NGBRegressor
 from sklearn.metrics import mean_squared_error
+from ngboost.scores import MLE, CRPS
 def model_test(Base, X_train, X_test, Y_train, Y_test, 
-               n_estimators=500, verbose_eval=100):
+               n_estimators=500, verbose_eval=100, learning_rate=0.01, Score=MLE,
+               plot_predict=True, return_y_pred=False):
     ngb = NGBRegressor(Base=Base, 
                        n_estimators=n_estimators,
-                       verbose_eval=verbose_eval)
+                       verbose_eval=verbose_eval,
+                       learning_rate=learning_rate,
+                       Score=Score)
     print(ngb,'\n')
     ngb.fit(X_train, Y_train)
 
@@ -181,3 +208,11 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
     # test Negative Log Likelihood
     test_NLL = -Y_dists.logpdf(Y_test).mean()
     print('Test NLL', test_NLL)
+
+    if plot_predict:
+        df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
+        df.columns = ['test','pred']
+        df.plot(figsize=(10,4), title='MSE:{}  NLL:{}'.
+                format(round(test_MSE,4), round(test_NLL,4)))
+    if return_y_pred:
+        return pd.Series(Y_preds,index=Y_test.index)
