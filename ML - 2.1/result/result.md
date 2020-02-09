@@ -19,12 +19,14 @@
 6. $WS_{t} \quad cos(WD_{t})$ **~ (t-3)**
 7. $WS_{t} \quad cos(WD_{t})$ **~ (t-6)**
 8. $WS_{t} \quad sin(WD_{t}) \quad cos(WD_{t})$ 
-9. $WS_{t} \quad sin(WD_{t}) \quad cos(WD_{t})$  **~ (t-3)**
-10. $WS_{t} \times sin(WD_{t})$
-11. $WS_{t} \times cos(WD_{t})$
-12. $WS_{t} \times cos(WD_{t})$ **~ (t-3)**
-13. $WS_{t} \times sin(WD_{t}), \quad WS_{t} \times cos(WD_{t})$ 
-14. $WS_{t} \times sin(WD_{t}), \quad WS_{t} \times cos(WD_{t})$  **~ (t-3)**
+9. $WS_{t} \quad sin(WD_{t}) \quad cos(WD_{t})$  **~ (t-2)**
+10. $WS_{t} \quad sin(WD_{t}) \quad cos(WD_{t})$  **~ (t-3)**
+11. $WS_{t} \times sin(WD_{t})$
+12. $WS_{t} \times cos(WD_{t})$
+13. $WS_{t} \times cos(WD_{t})$ **~ (t-3)**
+14. $WS_{t} \times sin(WD_{t}), \quad WS_{t} \times cos(WD_{t})$ 
+15. $WS_{t} \times sin(WD_{t}), \quad WS_{t} \times cos(WD_{t})$  **~ (t-2)**
+16. $WS_{t} \times sin(WD_{t}), \quad WS_{t} \times cos(WD_{t})$  **~ (t-3)**
 
 **输出：** $WP_{t}$
 

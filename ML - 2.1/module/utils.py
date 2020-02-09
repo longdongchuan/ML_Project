@@ -239,7 +239,7 @@ def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
     plt.savefig(save_path, dpi=300)
 
 
-def csv_to_MSE(path, test_len='auto', plot_fig=False, save_fig=False, add_model_title=True, 
+def csv_to_MSE(path, test_len='auto', plot_fig=False, save_fig=False, add_model_title=True, figsize=(10,4),
                save_path='/Users/apple/Documents/ML_Project/ML - 2.1/figure/'):
     df = pd.read_csv(path, index_col=0)
     if test_len=='auto':
@@ -258,7 +258,7 @@ def csv_to_MSE(path, test_len='auto', plot_fig=False, save_fig=False, add_model_
             else:
                 title='  MSE:{}'.format(round(test_MSE,4))
             # test Mean Squared Error
-            pd.concat([Y_test, Y_preds], axis=1).plot(figsize=(10,4), title=title)    
+            pd.concat([Y_test, Y_preds], axis=1).plot(figsize=figsize, title=title)    
             pd.Series(np.zeros(len(df)), index=df.index).plot(color='k')
             if save_fig:
                 plt.savefig(save_path+df.columns[i])
