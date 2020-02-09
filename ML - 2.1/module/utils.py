@@ -17,7 +17,6 @@ def load_data(path, add_time=True, describe=True):
     return data
 
 
-import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 def plot_module1(year, month, day, figsize=(14,16), save_fig=False, close_fig=True):
     path = '/Users/apple/Documents/ML_Project/ML - 2.1/data/国际西班牙数据.csv'
@@ -106,19 +105,19 @@ def Data_Extend_fun(Data, hour_num, columns):
 
 from sklearn.preprocessing import MinMaxScaler
 def get_data(hour_num=0, 
-             columns=['wind_speed', 'wind_direction', 'wind_power'], 
              train_index=[6426,10427],
              test_index=[14389,17872],
              transform=None,
              drop_time=True,
              scale=True,
+             return_y_scaler=False,
              path = '/Users/apple/Documents/ML_Project/ML - 2.1/Data/国际西班牙数据.csv'):
     # transform: can be one of [none, 'sin', 'cos', 'sin+cos', 
     #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     data= load_data(path, add_time=True, describe=False)
 
     if transform==None:
-        pass
+        columns=['wind_speed', 'wind_direction', 'wind_power']
     elif transform=='sin':
         data['sin(wd)'] = np.sin(data['wind_direction'])
         data.drop(['wind_direction'], axis=1, inplace=True)
@@ -135,16 +134,16 @@ def get_data(hour_num=0,
     elif transform=='ws*cos(wd)':
         data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
         data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
-        columns = ['ws*cos(wd)']
+        columns = ['ws*cos(wd)', 'wind_power']
     elif transform=='ws*sin(wd)':
         data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
         data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
-        columns = ['ws*sin(wd)']
+        columns = ['ws*sin(wd)', 'wind_power']
     elif transform=='ws*sin(wd)+ws*cos(wd)':
         data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
         data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
         data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
-        columns = ['ws*sin(wd)', 'ws*cos(wd)']
+        columns = ['ws*sin(wd)', 'ws*cos(wd)', 'wind_power']
     else:
         return print('ERROR: \'transform\' can only be [none, \'sin\', \'cos\', \'sin+cos\', \'ws*sin(wd)\', \'ws*cos(wd)\', \'ws*sin(wd)+ws*cos(wd)\']\n')
         
@@ -169,8 +168,6 @@ def get_data(hour_num=0,
         X_test = pd.DataFrame(X_Scaler.transform(X_test), columns=X_columns)
 
         Y_Scaler = MinMaxScaler()
-        Y_train_index = Y_train.index
-        Y_test_index = Y_test.index
         Y_train = pd.Series(Y_Scaler.fit_transform(Y_train.values.reshape(-1,1)).reshape(len(Y_train),), 
                             index=Y_train.index)
         Y_train.name = 'Y_train'
@@ -180,8 +177,12 @@ def get_data(hour_num=0,
     
     print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
         .format(hour_num, transform, drop_time, scale))
+    print('Input space: ',X_train.columns,'\n')
 
-    return X_train, X_test, Y_train, Y_test
+    if scale & return_y_scaler:
+        return X_train, X_test, Y_train, Y_test, Y_Scaler
+    else:
+        return X_train, X_test, Y_train, Y_test
 
 
 from ngboost import NGBRegressor
@@ -189,7 +190,7 @@ from sklearn.metrics import mean_squared_error
 from ngboost.scores import MLE, CRPS
 def model_test(Base, X_train, X_test, Y_train, Y_test, 
                n_estimators=500, verbose_eval=100, learning_rate=0.01, Score=MLE,
-               plot_predict=True, return_y_pred=False):
+               plot_predict=True, return_y_pred=False, return_y_dists=False):
     ngb = NGBRegressor(Base=Base, 
                        n_estimators=n_estimators,
                        verbose_eval=verbose_eval,
@@ -214,5 +215,73 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
         df.columns = ['test','pred']
         df.plot(figsize=(10,4), title='MSE:{}  NLL:{}'.
                 format(round(test_MSE,4), round(test_NLL,4)))
-    if return_y_pred:
+    if (return_y_pred) & (not(return_y_dists)):
         return pd.Series(Y_preds,index=Y_test.index)
+    if (not(return_y_pred)) & (return_y_dists):
+        return Y_dists
+    if (return_y_pred) & (return_y_dists):
+        return pd.Series(Y_preds,index=Y_test.index), Y_dists
+
+
+def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
+                   save_path='/Users/apple/Documents/ML_Project/ML - 2.1/result/plot/csv_to_heatmap.png'):
+    if path.split('.')[-1]=='csv':
+        df = pd.read_csv(path, index_col=0)
+    elif path.split('.')[-1]=='xlsx':
+        df = pd.read_excel(path, index_col=0)
+        
+    f, ax= plt.subplots(figsize=figsize,nrows=1)
+    if vmax>0.03:
+        sns.heatmap(df, ax=ax, vmin=vmin, vmax=vmax, annot=True, fmt='.3f')
+    else:
+        sns.heatmap(df, ax=ax, vmin=vmin, vmax=vmax, annot=True, fmt='.4f')
+    plt.xticks(rotation=20) 
+    plt.savefig(save_path, dpi=300)
+
+
+def csv_to_MSE(path, test_len='auto', plot_fig=False, save_fig=False, add_model_title=True, 
+               save_path='/Users/apple/Documents/ML_Project/ML - 2.1/figure/'):
+    df = pd.read_csv(path, index_col=0)
+    if test_len=='auto':
+        test_len=len(df)
+    df = df.iloc[:test_len]
+    MSE_dict={}
+    for i in np.arange(1,len(df.columns)):
+        Y_test = df['Y_test']
+        Y_preds = df[df.columns[i]]
+        test_MSE = mean_squared_error(Y_preds, Y_test)
+        MSE_dict.update({df.columns[i]:test_MSE})
+        if plot_fig:
+            if add_model_title:
+                title='Input: '+path.split('/')[-1].split('. ')[1].split('.')[0]+\
+                '   MSE:{}'.format(round(test_MSE,4))
+            else:
+                title='  MSE:{}'.format(round(test_MSE,4))
+            # test Mean Squared Error
+            pd.concat([Y_test, Y_preds], axis=1).plot(figsize=(10,4), title=title)    
+            pd.Series(np.zeros(len(df)), index=df.index).plot(color='k')
+            if save_fig:
+                plt.savefig(save_path+df.columns[i])
+                print('  Save figue in'+save_path)
+    return MSE_dict
+
+
+import os
+import seaborn as sns
+def csvs_to_MSE(test_len='auto', save_file=True, plot_figure=True, figsize=(15,8), vmin=0.01, vmax=0.04,
+                path='/Users/apple/Documents/ML_Project/ML - 2.1/result/csv/',
+                save_path='/Users/apple/Documents/ML_Project/ML - 2.1/result/'):
+    folder = os.listdir(path)
+    folder.remove('.DS_Store')
+    MSE_df = pd.DataFrame()
+    for file in folder:
+        test_MSE = csv_to_MSE(path+file, test_len=test_len, plot_fig=False, save_fig=False)
+        MSE_df = pd.concat([MSE_df, pd.Series(test_MSE, name=file.split('.csv')[0])], axis=1)
+    MSE_df = MSE_df.sort_index(axis=1)
+    if save_file:
+        MSE_df.to_csv(save_path+'MSE with len {}.csv'.format(test_len))
+    if plot_figure:
+        csv_to_heatmap(path=save_path+'MSE with len {}.csv'.format(test_len),
+                       figsize=figsize, vmin=vmin, vmax=vmax,
+                       save_path=save_path+'plot/MSE with len {}.png'.format(test_len))
+    return MSE_df
