@@ -5,6 +5,7 @@ import geatpy as ea
 import multiprocessing as mp
 from multiprocessing import Pool as ProcessPool
 from multiprocessing.dummy import Pool as ThreadPool
+from sklearn.model_selection import cross_val_score
 
 import sys
 sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
@@ -32,9 +33,9 @@ class MyProblem(ea.Problem): # 继承Problem父类
         Dim = 2 # 初始化Dim（决策变量维数）
         varTypes = [1, 1] # 初始化varTypes（决策变量的类型，元素为0表示对应的变量是连续的；1表示是离散的）
         lb = [0, 0] # 决策变量下界
-        ub = [10000, 1000] # 决策变量上界
+        ub = [15000, 2000] # 决策变量上界
         lbin = [1] * Dim # 决策变量下边界（0表示不包含该变量的下边界，1表示包含）
-        ubin = [0] * Dim # 决策变量上边界（0表示不包含该变量的上边界，1表示包含）
+        ubin = [1] * Dim # 决策变量上边界（0表示不包含该变量的上边界，1表示包含）
         # 调用父类构造方法完成实例化
         ea.Problem.__init__(self, name, M, maxormins, Dim, varTypes, lb, ub, lbin, ubin)
         # 目标函数计算中用到的一些数据
@@ -104,7 +105,7 @@ def subAimFunc(args):
     esn = esn_ridge_learner(
             n_readout=n_readout,
             n_components=n_components,
-            alpha=0.01).fit(data, dataTarget) # 创建分类器对象并用训练集的数据拟合分类器模型
+            alpha=0.01) # 创建分类器对象并用训练集的数据拟合分类器模型
 
     # esn = esn_linear_svr_learner(
     #             n_readout=n_readout,
@@ -113,7 +114,8 @@ def subAimFunc(args):
     #             C=0.02,
     #             max_iter=10000).fit(data, dataTarget) # 创建分类器对象并用训练集的数据拟合分类器模型
     
-    dataTarget_predict = esn.predict(data) # 采用训练好的分类器对象对测试集数据进行预测
-    scores = mean_squared_error(dataTarget_predict, dataTarget) # 计算交叉验证的得分
-    ObjV_i = [scores] # 把交叉验证的平均得分作为目标函数值
+    # dataTarget_predict = esn.predict(data) # 采用训练好的分类器对象对测试集数据进行预测
+    # scores = mean_squared_error(dataTarget_predict, dataTarget) # 计算交叉验证的得分
+    scores = cross_val_score(esn, data, dataTarget, cv=5, scoring='neg_mean_squared_error') # 计算交叉验证的得分
+    ObjV_i = [scores.mean()] # 把交叉验证的平均得分作为目标函数值
     return ObjV_i

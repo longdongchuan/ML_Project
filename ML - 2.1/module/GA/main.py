@@ -14,7 +14,7 @@ if __name__ == '__main__':
     population = ea.Population(Encoding, Field, NIND) # 实例化种群对象（此时种群还没被初始化，仅仅是完成种群对象的实例化）
     """===============================算法参数设置============================="""
     myAlgorithm = ea.soea_DE_rand_1_bin_templet(problem, population) # 实例化一个算法模板对象
-    myAlgorithm.MAXGEN = 30 # 最大进化代数
+    myAlgorithm.MAXGEN = 3 # 最大进化代数
     myAlgorithm.trappedValue = 1e-6 # “进化停滞”判断阈值
     myAlgorithm.maxTrappedCount = 10 # 进化停滞计数器最大上限值，如果连续maxTrappedCount代被判定进化陷入停滞，则终止进化
     """==========================调用算法模板进行种群进化======================="""
