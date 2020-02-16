@@ -11,5 +11,3 @@ model_test(Base=esn_linear_svr_learner(n_readout=1000,
            X_train=X_train, X_test=X_test,
            Y_train=Y_train, Y_test=Y_test,
           n_estimators=500, verbose_eval=10)
-
-print(Base.get_params())
