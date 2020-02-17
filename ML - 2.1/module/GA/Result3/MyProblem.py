@@ -109,6 +109,6 @@ def subAimFunc(args):
     #             max_iter=10000) # 创建分类器对象并用训练集的数据拟合分类器模型
     
     excute_time() # 显示执行 CV 的次数
-    scores = -cross_val_score(esn, data, dataTarget, cv=4, scoring='neg_mean_squared_error') # 计算交叉验证的得分
+    scores = -cross_val_score(esn, data, dataTarget, cv=10, scoring='neg_mean_squared_error') # 计算交叉验证的得分
     ObjV_i = [scores.mean()] # 把交叉验证的平均得分作为目标函数值
     return ObjV_i

@@ -20,7 +20,7 @@ class MyProblem(ea.Problem): # 继承Problem父类
         maxormins = [1] # 初始化maxormins（目标最小最大化标记列表，1：最小化该目标；-1：最大化该目标）
         Dim = 4 # 初始化Dim（决策变量维数）
         varTypes = [1, 1, 0, 0] # 初始化varTypes（决策变量的类型，元素为0表示对应的变量是连续的；1表示是离散的）
-        lb = [1, 1, 0, 0.5] # 决策变量下界
+        lb = [1, 1, 0, 0] # 决策变量下界
         ub = [10000, 2000, 1, 1] # 决策变量上界
         lbin = [0] * Dim # 决策变量下边界（0表示不包含该变量的下边界，1表示包含）
         ubin = [1] * Dim # 决策变量上边界（0表示不包含该变量的上边界，1表示包含）
@@ -109,6 +109,6 @@ def subAimFunc(args):
     #             max_iter=10000) # 创建分类器对象并用训练集的数据拟合分类器模型
     
     excute_time() # 显示执行 CV 的次数
-    scores = -cross_val_score(esn, data, dataTarget, cv=10, scoring='neg_mean_squared_error') # 计算交叉验证的得分
+    scores = -cross_val_score(esn, data, dataTarget, cv=4, scoring='neg_mean_squared_error') # 计算交叉验证的得分
     ObjV_i = [scores.mean()] # 把交叉验证的平均得分作为目标函数值
     return ObjV_i

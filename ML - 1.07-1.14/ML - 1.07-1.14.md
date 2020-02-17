@@ -82,6 +82,8 @@ These four functions are used to solve GPR, TPR, MV-GPR and MV-TPR, respectively
 
 [回声状态网络(ESN)教程](https://blog.csdn.net/cassiePython/article/details/80389394)
 
+[How to Understand the Spectral Radius of ESN](https://blog.csdn.net/dasimao/article/details/89635932)
+
 <img style="float:center" src="https://x1a-alioss.oss-cn-shenzhen.aliyuncs.com/20180521104711625.png" width="520" >
 
 # 5. Deep Ensembles
