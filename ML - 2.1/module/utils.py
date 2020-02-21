@@ -189,10 +189,13 @@ from ngboost import NGBRegressor
 from sklearn.metrics import mean_squared_error
 from ngboost.scores import MLE, CRPS
 def model_test(Base, X_train, X_test, Y_train, Y_test, 
-               n_estimators=500, verbose_eval=100, learning_rate=0.01, Score=MLE,
-               plot_predict=True, return_y_pred=False, return_y_dists=False):
+               n_estimators=500, learning_rate=0.01, Score=MLE,
+               verbose=True, verbose_eval=100, 
+               plot_predict=True, return_y_pred=False, 
+               return_y_dists=False, return_mse=False):
     ngb = NGBRegressor(Base=Base, 
                        n_estimators=n_estimators,
+                       verbose=verbose,
                        verbose_eval=verbose_eval,
                        learning_rate=learning_rate,
                        Score=Score)
@@ -221,6 +224,8 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
         return Y_dists
     if (return_y_pred) & (return_y_dists):
         return pd.Series(Y_preds,index=Y_test.index), Y_dists
+    if return_mse:
+        return test_MSE
 
 
 def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,

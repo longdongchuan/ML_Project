@@ -76,3 +76,53 @@
 4. weight_scaling = 0.9
 5. **Test mse：0.016665708498075166（测试集长度1000）**
 
+---
+
+# 模型比较
+
+- **ridge**
+    - alpha=0.01
+- **MSE = 0.016642**
+- **esn_ridge_learner**
+    - n_readout=464
+    - n_components=30
+    - damping=0.61758485
+    - weight_scaling=0.94653868
+    - alpha=0.01
+    - **MSE = 0.016483**
+
+- **esn_ridge_learner**（default）
+  - n_readout=1000
+  - n_components=100
+  - damping=0.5
+  - weight_scaling=0.9
+  - alpha=0.01
+  - **MSE = 0.016665**
+
+- **ngboost**
+    - **base=ridge**
+      - alpha=0.01
+    - n_estimators=500
+    - learning_rate=0.01
+- **MSE = 0.012642**
+- **ngboost**
+    - **base=esn_ridge_learner**
+      - n_readout=464
+      - n_components=30
+      - damping=0.61758485
+      - weight_scaling=0.94653868
+      - alpha=0.01
+    - n_estimators=500
+    - learning_rate=0.01
+    - **MSE = 0.0132529**
+
+- **ngboost**
+  - **base=esn_ridge_learner**（default）
+    - n_readout=1000
+    - n_components=100
+    - damping=0.5
+    - weight_scaling=0.9
+    - alpha=0.01
+  - n_estimators=500
+  - learning_rate=0.01
+  - **MSE =  0.0138924**
