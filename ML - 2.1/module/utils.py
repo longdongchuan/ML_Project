@@ -188,6 +188,46 @@ def get_data(hour_num=0,
 from ngboost import NGBRegressor
 from sklearn.metrics import mean_squared_error
 from ngboost.scores import MLE, CRPS
+# [model_test]: model test for ngboost
+#------- Process -------#
+# X_train --> ngboost.fit_predict(base, X_train, Y_train)
+#------- Input -------#
+# 1. Base: base learner
+# 2. ngboost_param: n_estimators, learning_rate, Score,
+#                   verbose, verbose_eval
+# 3. Data: X_train, X_test, Y_train, Y_test
+#------- Output -------# [Optional]
+# 1. default: None
+# 2. Plot Predict Figure: plot_predict=True
+# 3. Return Y Predict: return_y_pred
+# 4. Return Y Distribution: return_y_dists
+# 5. Return Y Predict & Distribution: return_y_pred, return_y_dists
+# 6. Return Test MSE: return_mse
+#------- Example -------#
+# import sys
+# sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
+# from utils import *
+# from ngboost.learners import *
+# from sklearn.metrics import mean_squared_error
+# import numpy as np
+# from tqdm.notebook import tqdm as tqdm
+# %config InlineBackend.figure_format='retina'
+# X_train, X_test, Y_train, Y_test = get_data(hour_num=0, transform='sin+cos',
+#                                             test_index=[14389, 15389],
+#                                             drop_time=True, scale=True)
+# n_readout=464
+# n_components=30
+# damping = 0.61758485
+# weight_scaling = 0.94653868
+# model_test(Base= esn_ridge_learner(
+#                 n_readout=n_readout,
+#                 n_components=n_components,
+#                 damping = damping,
+#                 weight_scaling = weight_scaling,
+#                 alpha=0.01),
+#             n_estimators=500, verbose_eval=100,
+#             X_train=X_train, X_test=X_test,
+#             Y_train=Y_train, Y_test=Y_test)
 def model_test(Base, X_train, X_test, Y_train, Y_test, 
                n_estimators=500, learning_rate=0.01, Score=MLE,
                verbose=True, verbose_eval=100, 
@@ -201,14 +241,104 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
                        Score=Score)
     print(ngb,'\n')
     ngb.fit(X_train, Y_train)
-
     Y_preds = ngb.predict(X_test)
     Y_dists = ngb.pred_dist(X_test) # return norm method: mean std
-
     # test Mean Squared Error
     test_MSE = mean_squared_error(Y_preds, Y_test)
     print('\nTest MSE', test_MSE)
+    # test Negative Log Likelihood
+    test_NLL = -Y_dists.logpdf(Y_test).mean()
+    print('Test NLL', test_NLL)
 
+    if plot_predict:
+        df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
+        df.columns = ['test','pred']
+        df.plot(figsize=(10,4), title='MSE:{}  NLL:{}'.
+                format(round(test_MSE,4), round(test_NLL,4)))
+    if (return_y_pred) & (not(return_y_dists)):
+        return pd.Series(Y_preds,index=Y_test.index)
+    if (not(return_y_pred)) & (return_y_dists):
+        return Y_dists
+    if (return_y_pred) & (return_y_dists):
+        return pd.Series(Y_preds,index=Y_test.index), Y_dists
+    if return_mse:
+        return test_MSE
+
+
+from ngboost import NGBRegressor
+from sklearn.metrics import mean_squared_error
+from ngboost.scores import MLE, CRPS
+from simple_esn.simple_esn import SimpleESN
+## [esn_model_test]: model test for esn based ngboost
+#------- Process -------#
+#     X_train 
+# --> ESN.fit_transform(X_train) as new_X_train for ngboost
+# --> ngboost.fit_predict(new_X_train, Y_train
+#                         base='ridge' or 'svr' or 'kernel ridge')
+#------- Input -------#
+# 1. Base: sklearn learner
+# 2. esn_param: dict={'n_readout', 'n_components', 
+#                     'damping', 'weight_scaling'}
+# 3. ngboost_param: n_estimators, learning_rate, Score, 
+#                   verbose, verbose_eval
+# 4. Data: X_train, X_test, Y_train, Y_test
+#------- Output -------# [Optional]
+# 1. default: None
+# 2. Plot Predict Figure: plot_predict=True
+# 3. Return Y Predict: return_y_pred
+# 4. Return Y Distribution: return_y_dists
+# 5. Return Y Predict & Distribution: return_y_pred, return_y_dists
+# 6. Return Test MSE: return_mse
+#------- Example -------#
+# import sys
+# sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
+# from utils import *
+# from ngboost.learners import *
+# from sklearn.metrics import mean_squared_error
+# from sklearn.linear_model import Ridge
+# %config InlineBackend.figure_format='retina'
+# X_train, X_test, Y_train, Y_test = get_data(hour_num=0, transform='sin+cos',
+#                                             test_index=[14389, 15389],
+#                                             drop_time=True, scale=True)
+# esn_param = {'n_readout': 464,
+#              'n_components': 30,
+#              'damping': 0.61758485,
+#              'weight_scaling': 0.94653868}
+# esn_model_test(Base=Ridge(alpha=0.01), 
+#                esn_param = esn_param,
+#                n_estimators=500, verbose_eval=100, Score=CRPS,
+#                X_train=X_train, X_test=X_test,
+#                Y_train=Y_train, Y_test=Y_test)
+def esn_model_test(Base, esn_param, 
+                   X_train, X_test, Y_train, Y_test, 
+                   n_estimators=500, learning_rate=0.01, Score=MLE,
+                   verbose=True, verbose_eval=100, 
+                   plot_predict=True, return_y_pred=False, 
+                   return_y_dists=False, return_mse=False):
+
+    ESN = SimpleESN(n_readout=esn_param['n_readout'], 
+                    n_components=esn_param['n_components'], 
+                    damping=esn_param['damping'],
+                    weight_scaling=esn_param['weight_scaling'], 
+                    discard_steps=0, 
+                    random_state=None)
+    X_train = ESN.fit_transform(X_train)
+    X_test = ESN.fit_transform(X_test)
+    
+    ngb = NGBRegressor(Base=Base, 
+                       n_estimators=n_estimators,
+                       verbose=verbose,
+                       verbose_eval=verbose_eval,
+                       learning_rate=learning_rate,
+                       Score=Score)
+    print(ESN,'\n')
+    print(ngb,'\n')
+    ngb.fit(X_train, Y_train)
+    Y_preds = ngb.predict(X_test)
+    Y_dists = ngb.pred_dist(X_test) # return norm method: mean std
+    # test Mean Squared Error
+    test_MSE = mean_squared_error(Y_preds, Y_test)
+    print('\nTest MSE', test_MSE)
     # test Negative Log Likelihood
     test_NLL = -Y_dists.logpdf(Y_test).mean()
     print('Test NLL', test_NLL)
