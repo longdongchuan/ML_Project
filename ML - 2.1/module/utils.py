@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+work_path = '/Users/apple/Documents/ML_Project'
+# work_path = '/home/aistudio/work'
+
 def load_data(path, add_time=True, describe=True):
     data = pd.read_csv(path)
     if describe:
@@ -19,7 +22,7 @@ def load_data(path, add_time=True, describe=True):
 
 from sklearn.preprocessing import MinMaxScaler
 def plot_module1(year, month, day, figsize=(14,16), save_fig=False, close_fig=True):
-    path = '/Users/apple/Documents/ML_Project/ML - 2.1/data/国际西班牙数据.csv'
+    path = work_path+'/ML - 2.1/data/国际西班牙数据.csv'
     df = load_data(path, add_time=True, describe=False)
     df['ws_sin(wd)'] = df['wind_speed']*np.sin(df['wind_direction'])
     df['ws_cos(wd)'] = df['wind_speed']*np.cos(df['wind_direction'])
@@ -48,13 +51,13 @@ def plot_module1(year, month, day, figsize=(14,16), save_fig=False, close_fig=Tr
     (df[(df['Year']==year) & (df['Month']==month) & (df['Day']==day)]\
      ['wind_direction'].values.reshape(-1,1)).reshape(24,)).plot(ax=axes[3,0],title='wind_speed & wind_direction')
     if save_fig:
-        plt.savefig('/Users/apple/Documents/ML_Project/ML - 2.1/figure/{}\{}\{}.png'.format(year,month,day))
+        plt.savefig(work_path+'/ML - 2.1/figure/{}\{}\{}.png'.format(year,month,day))
     if close_fig:
         plt.close()
 
 
 def plot_module2(year, month, day, figsize=(14,14), save_fig=False, close_fig=True):
-    path = '/Users/apple/Documents/ML_Project/ML - 2.1/data/国际西班牙数据.csv'
+    path = work_path+'/ML - 2.1/data/国际西班牙数据.csv'
     df = load_data(path, add_time=True, describe=False)
     df['ws_sin(wd)'] = df['wind_speed']*np.sin(df['wind_direction'])
     df['ws_cos(wd)'] = df['wind_speed']*np.cos(df['wind_direction'])
@@ -82,7 +85,7 @@ def plot_module2(year, month, day, figsize=(14,14), save_fig=False, close_fig=Tr
               (df[(df['Year']==year) & (df['Month']==month) & (df['Day']==day)]\
                ['wind_direction'].values.reshape(-1,1)).reshape(24,)).plot(ax=axes[0,1],title='wind_speed(Scaled) & wind_direction(Scaled)')
     if save_fig:
-        plt.savefig('/Users/apple/Documents/ML_Project/ML - 2.1/figure/{}\{}\{}.png'.format(year,month,day))
+        plt.savefig(work_path+'/ML - 2.1/figure/{}\{}\{}.png'.format(year,month,day))
     if close_fig:
         plt.close()
 
@@ -111,7 +114,7 @@ def get_data(hour_num=0,
              drop_time=True,
              scale=True,
              return_y_scaler=False,
-             path = '/Users/apple/Documents/ML_Project/ML - 2.1/Data/国际西班牙数据.csv'):
+             path = work_path+'/ML - 2.1/Data/国际西班牙数据.csv'):
     # transform: can be one of [none, 'sin', 'cos', 'sin+cos', 
     #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     data= load_data(path, add_time=True, describe=False)
@@ -359,7 +362,7 @@ def esn_model_test(Base, esn_param,
 
 
 def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
-                   save_path='/Users/apple/Documents/ML_Project/ML - 2.1/result/plot/csv_to_heatmap.png'):
+                   save_path=work_path+'/ML - 2.1/result/plot/csv_to_heatmap.png'):
     if path.split('.')[-1]=='csv':
         df = pd.read_csv(path, index_col=0)
     elif path.split('.')[-1]=='xlsx':
@@ -375,7 +378,7 @@ def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
 
 
 def csv_to_MSE(path, test_len='auto', plot_fig=False, save_fig=False, add_model_title=True, figsize=(10,4),
-               save_path='/Users/apple/Documents/ML_Project/ML - 2.1/figure/'):
+               save_path=work_path+'/ML - 2.1/figure/'):
     df = pd.read_csv(path, index_col=0)
     if test_len=='auto':
         test_len=len(df)
@@ -404,8 +407,8 @@ def csv_to_MSE(path, test_len='auto', plot_fig=False, save_fig=False, add_model_
 import os
 import seaborn as sns
 def csvs_to_MSE(test_len='auto', save_file=True, plot_figure=True, figsize=(15,8), vmin=0.01, vmax=0.04,
-                path='/Users/apple/Documents/ML_Project/ML - 2.1/result/csv/',
-                save_path='/Users/apple/Documents/ML_Project/ML - 2.1/result/'):
+                path=work_path+'/ML - 2.1/result/csv/',
+                save_path=work_path+'/ML - 2.1/result/'):
     folder = os.listdir(path)
     folder.remove('.DS_Store')
     MSE_df = pd.DataFrame()
