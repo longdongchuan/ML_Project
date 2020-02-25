@@ -425,13 +425,13 @@ def csvs_to_MSE(test_len='auto', save_file=True, plot_figure=True, figsize=(15,8
     return MSE_df
 
 
-
+import datetime
 def set_func(func):
     num = [0]   # 闭包中外函数中的变量指向的引用不可变
     def call_func():
         func()
         num[0] += 1
-        print("CV执行次数",num[0])
+        print("CV执行次数",num[0], datetime.datetime.now())
     return call_func
 # 待测试方法
 @set_func
