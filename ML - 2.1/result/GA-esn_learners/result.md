@@ -9,10 +9,10 @@
 5. “进化停滞”判断阈值：trappedValue = 1e-6
 6.  进化停滞计数器最大上限值：maxTrappedCount = 20
 7. 交叉验证折数：CV=10
-8. 训练集：[ 6426 , 10427 ] len: 4001【十折交叉验证，验证集长度400】
+8. 训练集+验证集：[ 6426 , 10427 ] len: 4001【**四折交叉验证**，验证集长度1000】
 9. 测试集：[ 14389 , 15388 ] len: 1000
-10. 输入空间：wind_power、 sin(wind_direction)、 cos(wind_direction)
-11. 预测：wind_speed
+10. 输入空间：wind_speed、 sin(wind_direction)、 cos(wind_direction)
+11. 预测：wind_power
 
 ## 1.1 esn_ridge_learner
 
