@@ -107,16 +107,37 @@ def Data_Extend_fun(Data, hour_num, columns):
 
 
 from sklearn.preprocessing import MinMaxScaler
+# [get_data]: function for get data from '国际西班牙数据'
+#------- Input -------#
+# hour_num: default 0, the 'l' in 't-l' feature
+# train_index: default [6426,10427](len:4000), the index of train data
+# test_index: default [14389,15390](len:1000), the index of test data
+# transform: defaut None, can be one of these:
+#           { None: Do nothing,
+#            'sin': transform [wind_direction] to [sin(wind_direction)], 
+#            'cos': transform [wind_direction] to [cos(wind_direction)], 
+#            'sin+cos': transform [wind_direction] to [sin(wind_direction), cos(wind_direction)], 
+#            'ws*sin(wd)': transform [wind_speed, wind_direction] to
+#                          [wind_speed * sin(wind_direction)], 
+#            'ws*cos(wd)': transform [wind_speed, wind_direction] to 
+#                          [wind_speed * cos(wind_direction)], 
+#            'ws*sin(wd)+ws*cos(wd)': transform [wind_speed, wind_direction] to 
+#                          [wind_speed*sin(wind_direction), wind_speed*cos(wind_direction)]}
+# drop_time: default True, drop time features: ['Year', 'Month', 'Day', 'Hour', 'Minute']
+# scale: take MinMaxScaler on both X and Y data
+# return_y_scaler: default False, return Y_train MinMaxScaler
+# path: path for CSV file
+#------- Output -------#
+# Default: X_train, X_test, Y_train, Y_test
+# scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
 def get_data(hour_num=0, 
              train_index=[6426,10427],
-             test_index=[14389,17872],
+             test_index=[14389,15390],
              transform=None,
              drop_time=True,
              scale=True,
              return_y_scaler=False,
              path = work_path+'/ML - 2.1/Data/国际西班牙数据.csv'):
-    # transform: can be one of [none, 'sin', 'cos', 'sin+cos', 
-    #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     data= load_data(path, add_time=True, describe=False)
 
     if transform==None:
@@ -180,6 +201,125 @@ def get_data(hour_num=0,
     
     print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
         .format(hour_num, transform, drop_time, scale))
+    print('Input space: ',X_train.columns,'\n')
+
+    if scale & return_y_scaler:
+        return X_train, X_test, Y_train, Y_test, Y_Scaler
+    else:
+        return X_train, X_test, Y_train, Y_test
+
+
+from sklearn.preprocessing import MinMaxScaler
+# [get_data2]: function for get data from folder '相近8个地点2012年数据'
+#------- Input -------#
+# hour_num: default 0, the 'l' in 't-l' feature
+# train_index: default [6426,10427](len:4000), the index of train data
+# test_index: default [14389,15390](len:1000), the index of test data
+# transform: defaut None, can be one of these:
+#           { None: Do nothing,
+#            'sin': transform [wind_direction] to [sin(wind_direction)], 
+#            'cos': transform [wind_direction] to [cos(wind_direction)], 
+#            'sin+cos': transform [wind_direction] to [sin(wind_direction), cos(wind_direction)], 
+#            'ws*sin(wd)': transform [wind_speed, wind_direction] to
+#                          [wind_speed * sin(wind_direction)], 
+#            'ws*cos(wd)': transform [wind_speed, wind_direction] to 
+#                          [wind_speed * cos(wind_direction)], 
+#            'ws*sin(wd)+ws*cos(wd)': transform [wind_speed, wind_direction] to 
+#                          [wind_speed*sin(wind_direction), wind_speed*cos(wind_direction)]}
+# drop_time: default True, drop time features: ['Year', 'Month', 'Day', 'Hour', 'Minute']
+# drop_else: default False, drop else features: ['air_temperature', 'surface_air_pressure', 'density']
+# scale: take MinMaxScaler on both X and Y data
+# return_y_scaler: default False, return Y_train MinMaxScaler
+# path: path for CSV file
+#------- Output -------#
+# Default: X_train, X_test, Y_train, Y_test
+# scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
+def get_data2(hour_num=0, 
+             train_index=[6426,10427],
+             test_index=[14389,15390],
+             transform=None,
+             drop_time=True,
+             drop_else=False,
+             scale=True,
+             return_y_scaler=False,
+             path = work_path+'/ML - 2.1/Data/相近8个地点2012年数据/20738-2012.csv'):
+    # transform: can be one of [None, 'sin', 'cos', 'sin+cos', 
+    #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
+    
+    data = pd.read_csv(path, skiprows=[0,1,2])
+    columns_name = ['Year', 'Month', 'Day', 'Hour', 'Minute', 
+                'wind_power','wind_direction', 'wind_speed',
+                'air_temperature', 'surface_air_pressure',
+                'density']
+    data.columns = columns_name
+
+    if transform==None:
+        columns=['wind_speed', 'wind_direction', 'wind_power']
+    elif transform=='sin':
+        data['sin(wd)'] = np.sin(data['wind_direction'])
+        data.drop(['wind_direction'], axis=1, inplace=True)
+        columns = ['wind_speed', 'sin(wd)', 'wind_power']
+    elif transform=='cos':
+        data['cos(wd)'] = np.cos(data['wind_direction'])
+        data.drop(['wind_direction'], axis=1, inplace=True)
+        columns = ['wind_speed', 'cos(wd)', 'wind_power']
+    elif transform=='sin+cos':
+        data['sin(wd)'] = np.sin(data['wind_direction'])
+        data['cos(wd)'] = np.cos(data['wind_direction'])
+        data.drop(['wind_direction'], axis=1, inplace=True)
+        columns = ['wind_speed', 'sin(wd)', 'cos(wd)', 'wind_power']
+    elif transform=='ws*cos(wd)':
+        data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
+        data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
+        columns = ['ws*cos(wd)', 'wind_power']
+    elif transform=='ws*sin(wd)':
+        data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
+        data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
+        columns = ['ws*sin(wd)', 'wind_power']
+    elif transform=='ws*sin(wd)+ws*cos(wd)':
+        data['ws*sin(wd)'] = data['wind_speed'] * np.sin(data['wind_direction'])
+        data['ws*cos(wd)'] = data['wind_speed'] * np.cos(data['wind_direction'])
+        data.drop(['wind_direction','wind_speed'], axis=1, inplace=True)
+        columns = ['ws*sin(wd)', 'ws*cos(wd)', 'wind_power']
+    else:
+        return print('ERROR: \'transform\' can only be [none, \'sin\', \'cos\', \'sin+cos\', \'ws*sin(wd)\', \'ws*cos(wd)\', \'ws*sin(wd)+ws*cos(wd)\']\n')
+        
+    if drop_else:
+        data.drop(['air_temperature', 'surface_air_pressure', 'density'], axis=1, inplace=True)
+    else:
+        columns = columns + ['air_temperature', 'surface_air_pressure', 'density']
+
+    Train = Data_Extend_fun(Data=data.iloc[train_index[0]:train_index[1]],
+                            hour_num=hour_num,columns = columns)
+    Test = Data_Extend_fun(Data=data.iloc[test_index[0]:test_index[1]],
+                           hour_num=hour_num,columns = columns)
+
+    X_train = Train.drop('wind_power', axis=1)
+    X_test = Test.drop('wind_power', axis=1)
+    Y_train = Train['wind_power']
+    Y_test = Test['wind_power']
+    
+    if drop_time:
+        X_train.drop(['Year', 'Month', 'Day', 'Hour', 'Minute'], axis=1, inplace=True)
+        X_test.drop(['Year', 'Month', 'Day', 'Hour', 'Minute'], axis=1, inplace=True)
+        
+    if scale:
+        X_Scaler = MinMaxScaler()
+        X_columns = X_train.columns
+        X_train = pd.DataFrame(X_Scaler.fit_transform(X_train), columns=X_columns)
+        X_test = pd.DataFrame(X_Scaler.transform(X_test), columns=X_columns)
+
+        Y_Scaler = MinMaxScaler()
+        Y_train = pd.Series(Y_Scaler.fit_transform(Y_train.values.reshape(-1,1)).reshape(len(Y_train),), 
+                            index=Y_train.index)
+        Y_train.name = 'Y_train'
+        Y_test = pd.Series(Y_Scaler.transform(Y_test.values.reshape(-1,1)).reshape(len(Y_test),),
+                            index=Y_test.index)
+        Y_test.name = 'Y_test'
+    
+    print('get_data(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
+        .format(hour_num, transform, drop_time, drop_else, scale))
+    print('Data:', path.split('/')[-2:],'\n')
     print('Input space: ',X_train.columns,'\n')
 
     if scale & return_y_scaler:
