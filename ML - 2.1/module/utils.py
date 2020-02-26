@@ -110,8 +110,8 @@ from sklearn.preprocessing import MinMaxScaler
 # [get_data]: function for get data from '国际西班牙数据'
 #------- Input -------#
 # hour_num: default 0, the 'l' in 't-l' feature
-# train_index: default [6426,10427](len:4000), the index of train data
-# test_index: default [14389,15390](len:1000), the index of test data
+# train_index: default [6426,10426](len:4000), the index of train data
+# test_index: default [14389,15389](len:1000), the index of test data
 # transform: defaut None, can be one of these:
 #           { None: Do nothing,
 #            'sin': transform [wind_direction] to [sin(wind_direction)], 
@@ -131,13 +131,14 @@ from sklearn.preprocessing import MinMaxScaler
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
 def get_data(hour_num=0, 
-             train_index=[6426,10427],
-             test_index=[14389,15390],
+             train_index=[6426,10426],
+             test_index=[14389,15389],
              transform=None,
              drop_time=True,
              scale=True,
              return_y_scaler=False,
-             path = work_path+'/ML - 2.1/Data/国际西班牙数据.csv'):
+             path = work_path+'/ML - 2.1/Data/国际西班牙数据.csv',
+             verbose=True):
     data= load_data(path, add_time=True, describe=False)
 
     if transform==None:
@@ -199,9 +200,10 @@ def get_data(hour_num=0,
                             index=Y_test.index)
         Y_test.name = 'Y_test'
     
-    print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
-        .format(hour_num, transform, drop_time, scale))
-    print('Input space: ',X_train.columns,'\n')
+    if verbose:
+        print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
+            .format(hour_num, transform, drop_time, scale))
+        print('Input space: ',X_train.columns,'\n')
 
     if scale & return_y_scaler:
         return X_train, X_test, Y_train, Y_test, Y_Scaler
@@ -213,8 +215,8 @@ from sklearn.preprocessing import MinMaxScaler
 # [get_data2]: function for get data from folder '相近8个地点2012年数据'
 #------- Input -------#
 # hour_num: default 0, the 'l' in 't-l' feature
-# train_index: default [6426,10427](len:4000), the index of train data
-# test_index: default [14389,15390](len:1000), the index of test data
+# train_index: default [6426,10426](len:4000), the index of train data
+# test_index: default [12000,13000](len:1000), the index of test data
 # transform: defaut None, can be one of these:
 #           { None: Do nothing,
 #            'sin': transform [wind_direction] to [sin(wind_direction)], 
@@ -235,14 +237,15 @@ from sklearn.preprocessing import MinMaxScaler
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
 def get_data2(hour_num=0, 
-             train_index=[6426,10427],
-             test_index=[14389,15390],
+             train_index=[6426,10426],
+             test_index=[12000,13000],
              transform=None,
              drop_time=True,
              drop_else=False,
              scale=True,
              return_y_scaler=False,
-             path = work_path+'/ML - 2.1/Data/相近8个地点2012年数据/20738-2012.csv'):
+             path = work_path+'/ML - 2.1/Data/相近8个地点2012年数据/20738-2012.csv',
+             verbose=True):
     # transform: can be one of [None, 'sin', 'cos', 'sin+cos', 
     #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     
@@ -317,10 +320,11 @@ def get_data2(hour_num=0,
                             index=Y_test.index)
         Y_test.name = 'Y_test'
     
-    print('get_data(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
-        .format(hour_num, transform, drop_time, drop_else, scale))
-    print('Data:', path.split('/')[-2:],'\n')
-    print('Input space: ',X_train.columns,'\n')
+    if verbose:
+        print('get_data(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
+            .format(hour_num, transform, drop_time, drop_else, scale))
+        print('Data:', path.split('/')[-2:],'\n')
+        print('Input space: ',X_train.columns,'\n')
 
     if scale & return_y_scaler:
         return X_train, X_test, Y_train, Y_test, Y_Scaler
@@ -589,3 +593,116 @@ def set_func(func):
 @set_func
 def excute_time():
     pass
+
+from tqdm.notebook import tqdm as tqdm
+from sklearn.tree import DecisionTreeRegressor
+import matplotlib.pyplot as plt
+import seaborn as sns
+def tree_model_plot1(best_param):
+    X_train, X_test, Y_train, Y_test, Y_scaler = \
+    get_data(hour_num=int(best_param['hour_num']),
+             transform=best_param['transform'],
+             drop_time=bool(best_param['transform']), 
+             scale=True, return_y_scaler=True)
+    Y_pred = DecisionTreeRegressor(max_depth=best_param['max_depth']).\
+        fit(X_train, Y_train).predict(X_test)
+    mse = mean_squared_error(Y_pred, Y_test)
+    pd.concat([pd.Series(Y_pred, name='Pred', 
+                         index=Y_test.index), Y_test], axis=1)\
+    .plot(title='mse:'+str(round(mse, 8))+\
+          '   depth:'+str(best_param['max_depth']),
+          figsize=(12, 5))
+
+def tree_model_plot2(best_param):
+    X_train, X_test, Y_train, Y_test, Y_scaler = \
+    get_data2(hour_num=int(best_param['hour_num']),
+             transform=best_param['transform'],
+             drop_time=bool(best_param['transform']),
+             drop_else=bool(best_param['drop_else']),
+             scale=True, return_y_scaler=True)
+    Y_pred = DecisionTreeRegressor(max_depth=best_param['max_depth']).\
+        fit(X_train, Y_train).predict(X_test)
+    mse = mean_squared_error(Y_pred, Y_test)
+    pd.concat([pd.Series(Y_pred, name='Pred', 
+                         index=Y_test.index), Y_test], axis=1)\
+    .plot(title='mse:'+str(round(mse, 8))+\
+          '   depth:'+str(best_param['max_depth']),
+          figsize=(12, 5))
+
+def tree_heatmap1(mse_df):
+    f, ax= plt.subplots(figsize=(15,18),nrows=3)
+    sns.heatmap(mse_df.groupby(['transform','hour_num'])['mse'].mean().unstack(),
+                ax=ax[0], vmax=0.008, annot=True, fmt='.5f')
+    sns.heatmap(mse_df.groupby(['transform','max_depth'])['mse'].mean().unstack(),
+                ax=ax[1], vmax=0.008, annot=True, fmt='.3f')
+    sns.heatmap(mse_df.groupby(['transform','drop_time'])['mse'].mean().unstack(),
+            ax=ax[2], vmax=0.008, annot=True, fmt='.5f')
+
+def tree_heatmap2(mse_df):
+    f, ax= plt.subplots(figsize=(15,24),nrows=4)
+    sns.heatmap(mse_df.groupby(['transform','hour_num'])['mse'].mean().unstack(),
+                ax=ax[0], vmax=0.008, annot=True, fmt='.5f')
+    sns.heatmap(mse_df.groupby(['transform','max_depth'])['mse'].mean().unstack(),
+                ax=ax[1], vmax=0.008, annot=True, fmt='.3f')
+    sns.heatmap(mse_df.groupby(['transform','drop_time'])['mse'].mean().unstack(),
+                ax=ax[2], vmax=0.008, annot=True, fmt='.5f')
+    sns.heatmap(mse_df.groupby(['transform','drop_else'])['mse'].mean().unstack(),
+                ax=ax[3], vmax=0.008, annot=True, fmt='.5f')
+
+def tree_grid_search1(param_grid, plot=True, heatmap=True):
+    mse_df = pd.DataFrame()
+    for transform in tqdm(param_grid['transform']):
+        for hour_num in param_grid['hour_num']:
+            for drop_time in param_grid['drop_time']:
+                X_train, X_test, Y_train, Y_test = \
+                get_data(hour_num=hour_num, transform=transform, 
+                         drop_time=drop_time, scale=True, verbose=False)
+                for max_depth in param_grid['max_depth']:
+                    Y_pred = DecisionTreeRegressor(max_depth=max_depth).\
+                    fit(X_train, Y_train).predict(X_test)
+                    mse = mean_squared_error(Y_pred, Y_test)
+                    new_data = {'transform': transform,
+                                'hour_num': hour_num,
+                                'drop_time': drop_time,
+                                'max_depth': max_depth,
+                                'mse':mse}
+                    mse_df = mse_df.append(new_data, ignore_index=True)  
+    if plot:
+        tree_model_plot1(dict(mse_df.iloc[mse_df['mse'].idxmin()]))
+    if heatmap:
+        tree_heatmap1(mse_df)
+
+    mse_df['transform'].replace({None: 'None'}, inplace=True)
+    print('best_param:\n', dict(mse_df.iloc[mse_df['mse'].idxmin()]),
+      '\n\nbest_mse:', mse_df['mse'].min())
+    return mse_df, dict(mse_df.iloc[mse_df['mse'].idxmin()])
+
+def tree_grid_search2(param_grid, plot=True, heatmap=True):
+    mse_df = pd.DataFrame()
+    for transform in tqdm(param_grid['transform']):
+        for hour_num in param_grid['hour_num']:
+            for drop_time in param_grid['drop_time']:
+                X_train, X_test, Y_train, Y_test = \
+                get_data(hour_num=hour_num, transform=transform, 
+                         drop_time=drop_time, scale=True, verbose=False)
+                for drop_else in param_grid['drop_else']:
+                    for max_depth in param_grid['max_depth']:
+                        Y_pred = DecisionTreeRegressor(max_depth=max_depth).\
+                        fit(X_train, Y_train).predict(X_test)
+                        mse = mean_squared_error(Y_pred, Y_test)
+                        new_data = {'transform': transform,
+                                    'hour_num': hour_num,
+                                    'drop_time': drop_time,
+                                    'drop_else': drop_else,
+                                    'max_depth': max_depth,
+                                    'mse':mse}
+                        mse_df = mse_df.append(new_data, ignore_index=True)  
+    if plot:
+        tree_model_plot2(dict(mse_df.iloc[mse_df['mse'].idxmin()]))  
+    if heatmap:
+        tree_heatmap2(mse_df)
+            
+    mse_df['transform'].replace({None: 'None'}, inplace=True)
+    print('best_param:\n', dict(mse_df.iloc[mse_df['mse'].idxmin()]),
+      '\n\nbest_mse:', mse_df['mse'].min())
+    return mse_df, dict(mse_df.iloc[mse_df['mse'].idxmin()])
