@@ -375,7 +375,8 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
                n_estimators=500, learning_rate=0.01, Score=MLE,
                verbose=True, verbose_eval=100, 
                plot_predict=True, return_y_pred=False, 
-               return_y_dists=False, return_mse=False):
+               return_y_dists=False, return_mse=False,
+               Y_scaler=None):
     ngb = NGBRegressor(Base=Base, 
                        n_estimators=n_estimators,
                        verbose=verbose,
@@ -394,10 +395,19 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
     print('Test NLL', test_NLL)
 
     if plot_predict:
-        df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
-        df.columns = ['test','pred']
-        df.plot(figsize=(10,4), title='MSE:{}  NLL:{}'.
-                format(round(test_MSE,4), round(test_NLL,4)))
+        if Y_scaler is not None:
+            df = pd.concat([pd.Series(Y_scaler.inverse_transform(Y_test.copy().values.reshape(-1,1)).reshape(-1,), 
+                                        index=Y_test.index), 
+                            pd.Series(Y_scaler.inverse_transform(np.array(Y_preds).reshape(-1, 1)).reshape(-1,),
+                                        index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}  NLL:{}'.
+                 format(round(test_MSE,4), round(test_NLL,4)))
+        else:
+            df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}  NLL:{}'.
+                    format(round(test_MSE,4), round(test_NLL,4)))
     if (return_y_pred) & (not(return_y_dists)):
         return pd.Series(Y_preds,index=Y_test.index)
     if (not(return_y_pred)) & (return_y_dists):
