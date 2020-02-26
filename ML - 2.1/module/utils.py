@@ -339,6 +339,7 @@ from ngboost.scores import MLE, CRPS
 # 2. ngboost_param: n_estimators, learning_rate, Score,
 #                   verbose, verbose_eval
 # 3. Data: X_train, X_test, Y_train, Y_test
+# 4. Y_scaler: default None, if there is a Y_scaler, then the plot value will be inverse
 #------- Output -------# [Optional]
 # 1. default: None
 # 2. Plot Predict Figure: plot_predict=True
@@ -346,6 +347,7 @@ from ngboost.scores import MLE, CRPS
 # 4. Return Y Distribution: return_y_dists
 # 5. Return Y Predict & Distribution: return_y_pred, return_y_dists
 # 6. Return Test MSE: return_mse
+# Attention! The Y Predict will always be scaled not matter there is a Y_scaler or not
 #------- Example -------#
 # import sys
 # sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
