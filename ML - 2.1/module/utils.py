@@ -669,12 +669,13 @@ def tree_grid_search1(param_grid, plot=True, heatmap=True):
                     mse_df = mse_df.append(new_data, ignore_index=True)  
     if plot:
         tree_model_plot1(dict(mse_df.iloc[mse_df['mse'].idxmin()]))
-    if heatmap:
-        tree_heatmap1(mse_df)
 
     mse_df['transform'].replace({None: 'None'}, inplace=True)
     print('best_param:\n', dict(mse_df.iloc[mse_df['mse'].idxmin()]),
       '\n\nbest_mse:', mse_df['mse'].min())
+
+    if heatmap:
+        tree_heatmap1(mse_df)
     return mse_df, dict(mse_df.iloc[mse_df['mse'].idxmin()])
 
 def tree_grid_search2(param_grid, plot=True, heatmap=True):
@@ -699,10 +700,11 @@ def tree_grid_search2(param_grid, plot=True, heatmap=True):
                         mse_df = mse_df.append(new_data, ignore_index=True)  
     if plot:
         tree_model_plot2(dict(mse_df.iloc[mse_df['mse'].idxmin()]))  
-    if heatmap:
-        tree_heatmap2(mse_df)
             
     mse_df['transform'].replace({None: 'None'}, inplace=True)
     print('best_param:\n', dict(mse_df.iloc[mse_df['mse'].idxmin()]),
       '\n\nbest_mse:', mse_df['mse'].min())
+
+    if heatmap:
+        tree_heatmap2(mse_df)
     return mse_df, dict(mse_df.iloc[mse_df['mse'].idxmin()])
