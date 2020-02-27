@@ -215,8 +215,8 @@ from sklearn.preprocessing import MinMaxScaler
 # [get_data2]: function for get data from folder '相近8个地点2012年数据'
 #------- Input -------#
 # hour_num: default 0, the 'l' in 't-l' feature
-# train_index: default [6426,10426](len:4000), the index of train data
-# test_index: default [12000,13000](len:1000), the index of test data
+# train_index: default [3001,7001](len:4000), the index of train data
+# test_index: default [2000,3000](len:1000), the index of test data
 # transform: defaut None, can be one of these:
 #           { None: Do nothing,
 #            'sin': transform [wind_direction] to [sin(wind_direction)], 
@@ -238,8 +238,8 @@ from sklearn.preprocessing import MinMaxScaler
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
 def get_data2(hour_num=0, 
-             train_index=[6426,10426],
-             test_index=[12000,13000],
+             train_index=[3001,7001],
+             test_index=[2000,3000],
              transform=None,
              drop_time=True,
              drop_else=False,
