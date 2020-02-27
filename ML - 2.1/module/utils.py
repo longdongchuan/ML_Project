@@ -639,15 +639,15 @@ def tree_heatmap1(mse_df):
             ax=ax[2], vmax=0.008, annot=True, fmt='.5f')
 
 def tree_heatmap2(mse_df):
-    f, ax= plt.subplots(figsize=(15,24),nrows=4)
+    f, ax= plt.subplots(figsize=(19,24),nrows=4)
     sns.heatmap(mse_df.groupby(['transform','hour_num'])['mse'].mean().unstack(),
-                ax=ax[0], vmax=0.008, annot=True, fmt='.5f')
+                ax=ax[0], vmax=0.00219, annot=True, fmt='.5f')
     sns.heatmap(mse_df.groupby(['transform','max_depth'])['mse'].mean().unstack(),
-                ax=ax[1], vmax=0.008, annot=True, fmt='.3f')
+                ax=ax[1], vmax=0.00007, annot=True, fmt='.5f')
     sns.heatmap(mse_df.groupby(['transform','drop_time'])['mse'].mean().unstack(),
-                ax=ax[2], vmax=0.008, annot=True, fmt='.5f')
+                ax=ax[2], vmax=0.00219, annot=True, fmt='.5f')
     sns.heatmap(mse_df.groupby(['transform','drop_else'])['mse'].mean().unstack(),
-                ax=ax[3], vmax=0.008, annot=True, fmt='.5f')
+                ax=ax[3], vmax=0.00219, annot=True, fmt='.5f')
 
 def tree_grid_search1(param_grid, plot=True, heatmap=True):
     mse_df = pd.DataFrame()
