@@ -230,6 +230,7 @@ from sklearn.preprocessing import MinMaxScaler
 #                          [wind_speed*sin(wind_direction), wind_speed*cos(wind_direction)]}
 # drop_time: default True, drop time features: ['Year', 'Month', 'Day', 'Hour', 'Minute']
 # drop_else: default False, drop else features: ['air_temperature', 'surface_air_pressure', 'density']
+# drop_minute: default False, if Ture, will only maintain the data will minute==0
 # scale: take MinMaxScaler on both X and Y data
 # return_y_scaler: default False, return Y_train MinMaxScaler
 # path: path for CSV file
@@ -245,7 +246,8 @@ def get_data2(hour_num=0,
              scale=True,
              return_y_scaler=False,
              path = work_path+'/ML - 2.1/Data/相近8个地点2012年数据/20738-2012.csv',
-             verbose=True):
+             verbose=True,
+             drop_minute=False):
     # transform: can be one of [None, 'sin', 'cos', 'sin+cos', 
     #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     
@@ -255,6 +257,12 @@ def get_data2(hour_num=0,
                 'air_temperature', 'surface_air_pressure',
                 'density']
     data.columns = columns_name
+
+    time_col = ['Year', 'Month', 'Day', 'Hour', 'Minute']
+    if drop_minute:
+        data = data[data['Minute']==0]
+        del data['Minute']
+        time_col = ['Year', 'Month', 'Day', 'Hour']
 
     if transform==None:
         columns=['wind_speed', 'wind_direction', 'wind_power']
@@ -303,8 +311,8 @@ def get_data2(hour_num=0,
     Y_test = Test['wind_power']
     
     if drop_time:
-        X_train.drop(['Year', 'Month', 'Day', 'Hour', 'Minute'], axis=1, inplace=True)
-        X_test.drop(['Year', 'Month', 'Day', 'Hour', 'Minute'], axis=1, inplace=True)
+        X_train.drop(time_col, axis=1, inplace=True)
+        X_test.drop(time_col, axis=1, inplace=True)
         
     if scale:
         X_Scaler = MinMaxScaler()
