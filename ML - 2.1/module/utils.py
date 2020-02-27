@@ -683,10 +683,11 @@ def tree_grid_search2(param_grid, plot=True, heatmap=True):
     for transform in tqdm(param_grid['transform']):
         for hour_num in param_grid['hour_num']:
             for drop_time in param_grid['drop_time']:
-                X_train, X_test, Y_train, Y_test = \
-                get_data(hour_num=hour_num, transform=transform, 
-                         drop_time=drop_time, scale=True, verbose=False)
                 for drop_else in param_grid['drop_else']:
+                    X_train, X_test, Y_train, Y_test = \
+                    get_data2(hour_num=hour_num, transform=transform, 
+                              drop_time=drop_time, drop_else=drop_else,
+                              scale=True, verbose=False)
                     for max_depth in param_grid['max_depth']:
                         Y_pred = DecisionTreeRegressor(max_depth=max_depth).\
                         fit(X_train, Y_train).predict(X_test)
