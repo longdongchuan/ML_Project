@@ -61,7 +61,7 @@ class MyProblem(ea.Problem): # 继承Problem父类
         data_test = X_test[:1000] # 测试集的特征数据（归一化）
         dataTarget_test = Y_test[:1000] # 测试集的标签数据
 
-        esn = esn_ridge_learner(
+        esn = esn_lasso_learner(
                 n_readout=n_readout,
                 n_components=n_components,
                 damping = damping,
@@ -94,7 +94,7 @@ def subAimFunc(args):
     weight_scaling = Vars[i, 3]
     alpha = Vars[i, 4]
  
-    esn = esn_ridge_learner(
+    esn = esn_lasso_learner(
             n_readout=n_readout,
             n_components=n_components,
             damping = damping,
