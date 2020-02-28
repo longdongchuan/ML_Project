@@ -49,3 +49,14 @@ if __name__ == '__main__':
                 damping = var_trace[best_gen, 2], 
                 weight_scaling = var_trace[best_gen, 3], 
                 alpha=var_trace[best_gen, 4])
+
+    result=open('result.txt',mode='w')
+    result.write('最优的目标函数值为：%s'%(best_ObjV),'\n')
+    result.write('最优的控制变量值为：\n')
+    for i in range(var_trace.shape[1]):
+        result.write(var_trace[best_gen, i],'\n')
+    result.write('有效进化代数：%s'%(obj_trace.shape[0]),'\n')
+    result.write('最优的一代是第 %s 代'%(best_gen + 1),'\n')
+    result.write('评价次数：%s'%(myAlgorithm.evalsNum),'\n')
+    result.write('时间已过 %s 秒'%(myAlgorithm.passTime),'\n')
+    result.colse()
