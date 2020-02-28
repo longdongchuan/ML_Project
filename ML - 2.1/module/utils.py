@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-work_path = '/Users/apple/Documents/ML_Project'
+work_path = '~/Documents/ML_Project'
 # work_path = '/home/aistudio/work'
 
 def load_data(path, add_time=True, describe=True):
