@@ -131,8 +131,8 @@ from sklearn.preprocessing import MinMaxScaler
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
 def get_data(hour_num=0, 
-             train_index=[6426,10426],
-             test_index=[14389,15389],
+             train_index=[6426,10427],
+             test_index=[14389,15390],
              transform=None,
              drop_time=True,
              scale=True,
@@ -203,7 +203,9 @@ def get_data(hour_num=0,
     if verbose:
         print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
             .format(hour_num, transform, drop_time, scale))
-        print('Input space: ',X_train.columns,'\n')
+        print('Input space:',X_train.columns)
+        print('train index:', train_index, 'train_len:', len(X_train))
+        print('test index:', test_index, 'test_len:', len(X_test))
 
     if scale & return_y_scaler:
         return X_train, X_test, Y_train, Y_test, Y_Scaler
@@ -238,8 +240,8 @@ from sklearn.preprocessing import MinMaxScaler
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
 def get_data2(hour_num=0, 
-             train_index=[3001,7001],
-             test_index=[2000,3000],
+             train_index=[3001,7002],
+             test_index=[2000,3001],
              transform=None,
              drop_time=True,
              drop_else=False,
@@ -332,7 +334,9 @@ def get_data2(hour_num=0,
         print('get_data(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
             .format(hour_num, transform, drop_time, drop_else, scale))
         print('Data:', path.split('/')[-2:],'\n')
-        print('Input space: ',X_train.columns,'\n')
+        print('Input space:',X_train.columns)
+        print('train index:', train_index, 'train_len:', len(X_train))
+        print('test index:', test_index, 'test_len:', len(X_test))
 
     if scale & return_y_scaler:
         return X_train, X_test, Y_train, Y_test, Y_Scaler
@@ -436,7 +440,7 @@ from ngboost import NGBRegressor
 from sklearn.metrics import mean_squared_error
 from ngboost.scores import MLE, CRPS
 from simple_esn.simple_esn import SimpleESN
-## [esn_model_test]: model test for esn based ngboost
+## [model_test_for_esn_base]: model test for esn based ngboost
 #------- Process -------#
 #     X_train 
 # --> ESN.fit_transform(X_train) as new_X_train for ngboost
@@ -471,12 +475,12 @@ from simple_esn.simple_esn import SimpleESN
 #              'n_components': 30,
 #              'damping': 0.61758485,
 #              'weight_scaling': 0.94653868}
-# esn_model_test(Base=Ridge(alpha=0.01), 
+# model_test_for_esn_base(Base=Ridge(alpha=0.01), 
 #                esn_param = esn_param,
 #                n_estimators=500, verbose_eval=100, Score=CRPS,
 #                X_train=X_train, X_test=X_test,
 #                Y_train=Y_train, Y_test=Y_test)
-def esn_model_test(Base, esn_param, 
+def model_test_for_esn_base(Base, esn_param, 
                    X_train, X_test, Y_train, Y_test, 
                    n_estimators=500, learning_rate=0.01, Score=MLE,
                    verbose=True, verbose_eval=100, 
@@ -521,6 +525,38 @@ def esn_model_test(Base, esn_param,
         return Y_dists
     if (return_y_pred) & (return_y_dists):
         return pd.Series(Y_preds,index=Y_test.index), Y_dists
+    if return_mse:
+        return test_MSE
+
+
+def base_model_test(base, X_train, X_test, Y_train, Y_test, 
+                   plot_predict=True, return_y_pred=False, 
+                   return_mse=False, Y_scaler=None, verbose=True):
+
+    base.fit(X_train, Y_train)
+    Y_preds = base.predict(X_test)
+    # test Mean Squared Error
+    test_MSE = mean_squared_error(Y_preds, Y_test)
+    if verbose==True:
+        print(base,'\n')
+        print('\nTest MSE', test_MSE)
+
+    if plot_predict:
+        if Y_scaler is not None:
+            df = pd.concat([pd.Series(Y_scaler.inverse_transform(Y_test.copy().values.reshape(-1,1)).reshape(-1,), 
+                                        index=Y_test.index), 
+                            pd.Series(Y_scaler.inverse_transform(np.array(Y_preds).reshape(-1, 1)).reshape(-1,),
+                                        index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                 format(round(test_MSE,4)))
+        else:
+            df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                    format(round(test_MSE,4)))
+    if return_y_pred:
+        return pd.Series(Y_preds,index=Y_test.index)
     if return_mse:
         return test_MSE
 
