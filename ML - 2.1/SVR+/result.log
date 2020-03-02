@@ -1,2 +1,6 @@
+get_data(hour_num=1, transform='sin+cos', drop_time=True, scale=True)
 
- Mean Squared Error: 1.630239361637774
+Input space:  Index(['wind_speed', 'sin(wd)', 'cos(wd)', 'wind_speed-1', 'sin(wd)-1',
+       'cos(wd)-1', 'wind_power-1'],
+      dtype='object') 
+
