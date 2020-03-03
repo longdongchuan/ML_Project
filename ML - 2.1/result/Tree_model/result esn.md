@@ -194,7 +194,7 @@ param_grid2 = {'transform': [None, 'sin', 'cos', 'sin+cos', 'ws*sin(wd)',
 
 ### 1.2.2 对 esn 参数进行搜索
 
-接下来在 1.2.1.1 的最优参数基础上，对 esn 参数进行网络搜索，搜索范围如下所示：
+接下来在 1.2.1 的最优参数基础上，对 esn 参数进行网络搜索，搜索范围如下所示：
 
 ```python
 esn_param = {
