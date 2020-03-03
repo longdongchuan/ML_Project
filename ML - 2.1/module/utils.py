@@ -331,7 +331,7 @@ def get_data2(hour_num=0,
         Y_test.name = 'Y_test'
     
     if verbose:
-        print('get_data(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
+        print('get_data2(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
             .format(hour_num, transform, drop_time, drop_else, scale))
         print('Data:', path.split('/')[-2:],'\n')
         print('Input space:',X_train.columns)
