@@ -347,6 +347,7 @@ def get_data2(hour_num=0,
 from ngboost import NGBRegressor
 from sklearn.metrics import mean_squared_error
 from ngboost.scores import MLE, CRPS
+from ngboost.distns import Bernoulli, Normal, LogNormal
 # [model_test]: model test for ngboost
 #------- Process -------#
 # X_train --> ngboost.fit_predict(base, X_train, Y_train)
@@ -390,7 +391,7 @@ from ngboost.scores import MLE, CRPS
 #             X_train=X_train, X_test=X_test,
 #             Y_train=Y_train, Y_test=Y_test)
 def model_test(Base, X_train, X_test, Y_train, Y_test, 
-               n_estimators=500, learning_rate=0.01, Score=MLE,
+               n_estimators=500, learning_rate=0.01, Score=MLE, Dist=Normal,
                verbose=True, verbose_eval=100, 
                plot_predict=True, return_y_pred=False, 
                return_y_dists=False, return_mse=False,
@@ -400,7 +401,7 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
                        verbose=verbose,
                        verbose_eval=verbose_eval,
                        learning_rate=learning_rate,
-                       Dist=Normal,
+                       Dist=Dist,
                        Score=Score)
     print(ngb,'\n')
     ngb.fit(X_train, Y_train)
@@ -441,6 +442,7 @@ from ngboost import NGBRegressor
 from sklearn.metrics import mean_squared_error
 from ngboost.scores import MLE, CRPS
 from simple_esn.simple_esn import SimpleESN
+from ngboost.distns import Bernoulli, Normal, LogNormal
 ## [model_test_for_esn_base]: model test for esn based ngboost
 #------- Process -------#
 #     X_train 
@@ -483,7 +485,7 @@ from simple_esn.simple_esn import SimpleESN
 #                Y_train=Y_train, Y_test=Y_test)
 def model_test_for_esn_base(Base, esn_param, 
                    X_train, X_test, Y_train, Y_test, 
-                   n_estimators=500, learning_rate=0.01, Score=MLE,
+                   n_estimators=500, learning_rate=0.01, Score=MLE, Dist=Normal,
                    verbose=True, verbose_eval=100, 
                    plot_predict=True, return_y_pred=False, 
                    return_y_dists=False, return_mse=False):
@@ -502,7 +504,7 @@ def model_test_for_esn_base(Base, esn_param,
                        verbose=verbose,
                        verbose_eval=verbose_eval,
                        learning_rate=learning_rate,
-                       Dist=Normal,
+                       Dist=Dist,
                        Score=Score)
     print(ESN,'\n')
     print(ngb,'\n')
