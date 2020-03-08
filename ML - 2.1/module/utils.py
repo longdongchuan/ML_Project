@@ -646,7 +646,7 @@ def tree_model_plot1(best_param):
     X_train, X_test, Y_train, Y_test, Y_scaler = \
     get_data(hour_num=int(best_param['hour_num']),
              transform=best_param['transform'],
-             drop_time=bool(best_param['transform']), 
+             drop_time=bool(best_param['drop_time']), 
              scale=True, return_y_scaler=True)
     Y_pred = DecisionTreeRegressor(max_depth=best_param['max_depth']).\
         fit(X_train, Y_train).predict(X_test)
@@ -657,13 +657,14 @@ def tree_model_plot1(best_param):
           '   depth:'+str(best_param['max_depth']),
           figsize=(12, 5))
 
-def tree_model_plot2(best_param):
+def tree_model_plot2(best_param, drop_minute=False):
     X_train, X_test, Y_train, Y_test, Y_scaler = \
     get_data2(hour_num=int(best_param['hour_num']),
              transform=best_param['transform'],
-             drop_time=bool(best_param['transform']),
+             drop_time=bool(best_param['drop_time']),
              drop_else=bool(best_param['drop_else']),
-             scale=True, return_y_scaler=True)
+             scale=True, return_y_scaler=True,
+              drop_minute=drop_minute)
     Y_pred = DecisionTreeRegressor(max_depth=best_param['max_depth']).\
         fit(X_train, Y_train).predict(X_test)
     mse = mean_squared_error(Y_pred, Y_test)
