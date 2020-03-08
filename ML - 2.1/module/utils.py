@@ -400,6 +400,7 @@ def model_test(Base, X_train, X_test, Y_train, Y_test,
                        verbose=verbose,
                        verbose_eval=verbose_eval,
                        learning_rate=learning_rate,
+                       Dist=Normal,
                        Score=Score)
     print(ngb,'\n')
     ngb.fit(X_train, Y_train)
@@ -501,6 +502,7 @@ def model_test_for_esn_base(Base, esn_param,
                        verbose=verbose,
                        verbose_eval=verbose_eval,
                        learning_rate=learning_rate,
+                       Dist=Normal,
                        Score=Score)
     print(ESN,'\n')
     print(ngb,'\n')
