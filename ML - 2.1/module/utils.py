@@ -569,6 +569,31 @@ import sys
 from SV_Quad import *
 import datetime
 import pandas as pd
+# ----- Example -----#
+# import numpy as np
+# import sys
+# sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
+# from utils import get_data, svr_plus
+# X_train, X_test, Y_train, Y_test ,Y_scaler= get_data(
+#     hour_num=1, transform='sin+cos',
+#     train_index=[6426,10427],
+#     test_index=[14389,15390],
+#     return_y_scaler=True)
+# X_star = np.array(X_train[['wind_speed','sin(wd)']]) # X_star
+# X_train = np.array(X_train)
+# X_test = np.array(X_test)
+# Y_train = np.array(Y_train).reshape(-1, 1)
+# Y_test = np.array(Y_test).reshape(-1, 1)
+# Parameters = {'C': 10,
+#               'gamma_corSpace': 10,
+#               'gamma_rbf': 1,
+#               'gamma_rbf_corSpace': 10,
+#               'epsilon': 0.1,
+#               'tol': 0.0001}
+# Y_preds = svr_plus(X_train, X_test, Y_train, Y_test, 
+#                    X_star, Parameters, 
+#                    Y_scaler=Y_scaler,return_y_pred=True)
+# Y_preds.to_csv('result/US_ws_sin(wd).csv')
 def svr_plus(X_train, X_test, 
              Y_train, Y_test, 
              X_star=None, 
