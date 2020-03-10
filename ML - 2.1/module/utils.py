@@ -565,6 +565,54 @@ def base_model_test(base, X_train, X_test, Y_train, Y_test,
         return test_MSE
 
 
+import sys
+from SV_Quad import *
+import datetime
+import pandas as pd
+def svr_plus(X_train, X_test, 
+             Y_train, Y_test, 
+             X_star=None, 
+             Parameters={'C': 10,
+                         'gamma_corSpace': 10,
+                         'gamma_rbf': 1,
+                         'gamma_rbf_corSpace': 10,
+                         'epsilon': 0.1,
+                         'tol': 0.0001}, 
+             return_y_pred=False, 
+             return_mse=False,
+             plot_predict=True,             
+             Y_scaler=None):
+    print('\n Training... ', datetime.datetime.now())
+    K = rbf_kernel(X_train, Y=None, gamma = Parameters['gamma_rbf'])
+    reg = SVR_Plus_Quad(X_train, X_star, Y_train, K ,Parameters)
+    Kern = rbf_kernel(X_train, X_test, gamma=Parameters['gamma_rbf'])
+    
+    print('\n Predict... ', datetime.datetime.now())
+    Y_preds = np.dot(np.transpose((reg['alpha_star'][:, 0] - reg['alpha'][:, 0])[:, None]) , Kern) + reg['bias']
+    test_MSE = mean_squared_error(Y_test, np.squeeze(Y_preds))
+    print ('\n Mean Squared Error: ' + str(test_MSE))
+    
+    if plot_predict:
+        if Y_scaler is not None:
+            df = pd.concat([pd.Series(Y_scaler.inverse_transform(Y_test).reshape(-1,)), 
+                            pd.Series(Y_scaler.inverse_transform(Y_preds).reshape(-1,))], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                 format(round(test_MSE,4)))
+        else:
+            df = pd.concat([pd.Series(Y_test.reshape(-1,)), 
+                            pd.Series(Y_preds.reshape(-1,))], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                    format(round(test_MSE,4)))
+    if (return_y_pred) & (return_mse):
+        return pd.Series(Y_preds.reshape(-1,)), test_MSE
+    if return_y_pred:
+        return pd.Series(Y_preds.reshape(-1,))
+    if return_mse:
+        return test_MSE        
+
+
 def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
                    save_path=work_path+'/ML - 2.1/result/plot/csv_to_heatmap.png'):
     if path.split('.')[-1]=='csv':
