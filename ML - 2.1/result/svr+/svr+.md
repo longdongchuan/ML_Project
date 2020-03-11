@@ -1,8 +1,10 @@
 [toc]
 
-# 1. 西班牙数据集
+# SVR+
 
-## 1.1 Privileged Information = Wind_Power_train ( t )
+## 1. 西班牙数据集
+
+### 1.1 Privileged Information = Wind_Power_train ( t )
 
 train index: [6426, 10427]   train_len: 4000
 test index: [14389, 15390]  test_len: 1000
@@ -35,7 +37,7 @@ Parameters = {'C': 10,
 
 ![Spain_wp_4000](/Users/apple/Documents/ML_Project/ML - 2.1/result/svr+/figure/Spain_wp_4000.png)
 
-## 1.2 Privileged Information = Wind_Speed_train ( t ), sin(Wind_Direction_train) ( t )
+### 1.2 Privileged Information = Wind_Speed_train ( t ), sin(Wind_Direction_train) ( t )
 
 train index: [6426, 10427]   train_len: 4000
 test index: [14389, 15390]  test_len: 1000
@@ -67,9 +69,9 @@ Parameters = {'C': 10,
 
 ![Spain_ws_sin(wd)_4000](/Users/apple/Documents/ML_Project/ML - 2.1/result/svr+/figure/Spain_ws_sin(wd)_4000.png)
 
-# 2. 美国数据集
+## 2. 美国数据集
 
-## 1.1 Privileged Information = Wind_Power_train ( t )
+### 1.1 Privileged Information = Wind_Power_train ( t )
 
 train index: [3001, 7002] train_len: 4000
 test index: [2000, 3001] test_len: 1000
@@ -102,7 +104,7 @@ Parameters = {'C': 10,
 
 ![US_wp_4000](/Users/apple/Documents/ML_Project/ML - 2.1/result/svr+/figure/US_wp_4000.png)
 
-## 1.2 Privileged Information = Wind_Speed_train ( t ), sin(Wind_Direction_train) ( t )
+### 1.2 Privileged Information = Wind_Speed_train ( t ), sin(Wind_Direction_train) ( t )
 
 train index: [6426, 10427]   train_len: 4000
 test index: [14389, 15390]  test_len: 1000
