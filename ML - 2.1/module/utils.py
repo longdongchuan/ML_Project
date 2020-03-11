@@ -715,6 +715,74 @@ def GBRT_test(X_train, X_test, Y_train, Y_test,
         return test_MSE
 
 
+from xgboost.sklearn import XGBRegressor
+from sklearn.metrics import mean_squared_error
+#----- Example ----#
+# from xgboost.sklearn import XGBRegressor
+# X_train, X_test, Y_train, Y_test ,Y_scaler= get_data(
+#     hour_num=1, transform='sin+cos',
+#     train_index=[6426,10427],
+#     test_index=[14389,15390],
+#     return_y_scaler=True)
+# Y_pred = XGBoost_test(X_train, X_test, Y_train, Y_test, 
+#                  max_depth=4, n_estimators=100, learning_rate=0.1, 
+#                  min_child_weight=1, n_jobs=4, verbose_eval=False,
+#                  verbose=True, plot_predict=True, 
+#                  return_y_pred=True, return_mse=False, 
+#                  Y_scaler=None)
+def XGBoost_test(X_train, X_test, Y_train, Y_test, 
+                 max_depth=4, n_estimators=100, learning_rate=0.1, 
+                 min_child_weight=1, n_jobs=4, verbose_eval=False,
+                 verbose=True, plot_predict=True, 
+                 return_y_pred=False, return_mse=False, 
+                 Y_scaler=None):
+    XGBoost = XGBRegressor(max_depth=max_depth,
+                           n_estimators=n_estimators,
+                           learning_rate=learning_rate,
+                           min_child_weight=min_child_weight,
+                           n_jobs=n_jobs)
+    
+    if verbose:
+        print(XGBoost,'\n')
+    XGBoost.fit(X_train, Y_train, verbose=verbose_eval,
+                eval_set=[(X_train, Y_train), (X_test, Y_test)],
+                eval_metric='rmse')
+    Y_preds = XGBoost.predict(X_test)
+    test_MSE = mean_squared_error(Y_preds, Y_test)
+    
+    if verbose:
+        print('\nTest MSE', test_MSE)
+    
+        train_mse = pd.Series(np.square(XGBoost.evals_result()['validation_0']['rmse']), name='train')
+        train_mse.index.name = 'n_estimators'
+        train_mse.plot(title='MSE', legend=True)
+        test_mse = pd.Series(np.square(XGBoost.evals_result()['validation_1']['rmse']), name='test')
+        test_mse.index.name = 'n_estimators'
+        test_mse.plot(title='MSE', legend=True)
+
+    if plot_predict:
+        if Y_scaler is not None:
+            df = pd.concat([pd.Series(Y_scaler.inverse_transform(Y_test.copy().values.reshape(-1,1)).reshape(-1,), 
+                                        index=Y_test.index), 
+                            pd.Series(Y_scaler.inverse_transform(np.array(Y_preds).reshape(-1, 1)).reshape(-1,),
+                                        index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                 format(round(test_MSE,4)))
+        else:
+            df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                    format(round(test_MSE,4)))
+
+    if (return_y_pred) & (return_mse):
+        return pd.Series(Y_preds,index=Y_test.index), test_MSE
+    if return_y_pred:
+        return pd.Series(Y_preds,index=Y_test.index)
+    if return_mse:
+        return test_MSE
+
+
 def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
                    save_path=work_path+'/ML - 2.1/result/plot/csv_to_heatmap.png'):
     if path.split('.')[-1]=='csv':
