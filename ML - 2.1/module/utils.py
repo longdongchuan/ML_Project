@@ -672,9 +672,9 @@ def GBRT_test(X_train, X_test, Y_train, Y_test,
     GBRT.fit(X_train, Y_train)
     Y_preds = GBRT.predict(X_test)
     test_MSE = mean_squared_error(Y_preds, Y_test)
-    print('\nTest MSE', test_MSE)
-
+    
     if verbose:
+        print('\nTest MSE', test_MSE)
         n_estimators_mse = pd.Series(GBRT.train_score_)
         n_estimators_mse.index.name = 'n_estimators'
         n_estimators_mse.plot(title='MSE')
