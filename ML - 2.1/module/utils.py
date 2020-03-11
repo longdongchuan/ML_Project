@@ -130,6 +130,12 @@ from sklearn.preprocessing import MinMaxScaler
 #------- Output -------#
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
+#------- Example -------#
+# X_train, X_test, Y_train, Y_test ,Y_scaler= get_data(
+#     hour_num=1, transform='sin+cos',
+#     train_index=[6426,8427],
+#     test_index=[14389,15390],
+#     return_y_scaler=True)
 def get_data(hour_num=0, 
              train_index=[6426,10427],
              test_index=[14389,15390],
@@ -240,6 +246,13 @@ from sklearn.preprocessing import MinMaxScaler
 #------- Output -------#
 # Default: X_train, X_test, Y_train, Y_test
 # scale & return_y_scaler: X_train, X_test, Y_train, Y_test, Y_Scaler
+#------- Example -------#
+# X_train, X_test, Y_train, Y_test ,Y_scaler= get_data2(
+#     hour_num=1, transform='sin+cos',
+#     train_index=[3001,7002],
+#     test_index=[2000,3001],
+#     return_y_scaler=True,
+#     drop_else=True)
 def get_data2(hour_num=0, 
              train_index=[3001,7002],
              test_index=[2000,3001],
