@@ -640,6 +640,68 @@ def svr_plus(X_train, X_test,
         return test_MSE        
 
 
+from sklearn.ensemble import GradientBoostingRegressor
+# ---- Example ---- #
+# import numpy as np
+# import sys
+# sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
+# from utils import get_data, get_data2, GBRT_test
+# %config InlineBackend.figure_format='retina'
+# X_train, X_test, Y_train, Y_test ,Y_scaler= get_data(
+#     hour_num=1, transform='sin+cos',
+#     train_index=[6426,10427],
+#     test_index=[14389,15390],
+#     return_y_scaler=True)
+# result = GBRT_test(X_train, X_test, Y_train, Y_test, 
+#                n_estimators=200, criterion='mse', max_depth=4,
+#                verbose=True, verbose_eval=10, 
+#                plot_predict=True, return_y_pred=True, 
+#                return_mse=False, Y_scaler=Y_scaler)
+def GBRT_test(X_train, X_test, Y_train, Y_test, 
+               n_estimators=30,criterion='mse', max_depth=4,
+               verbose=True, verbose_eval=10, 
+               plot_predict=True, return_y_pred=False, 
+               return_mse=False, Y_scaler=None):
+    GBRT = GradientBoostingRegressor(n_estimators=n_estimators,
+                                     criterion=criterion, 
+                                     max_depth=max_depth,
+                                     verbose=verbose_eval)
+    
+    if verbose:
+        print(GBRT,'\n')
+    GBRT.fit(X_train, Y_train)
+    Y_preds = GBRT.predict(X_test)
+    test_MSE = mean_squared_error(Y_preds, Y_test)
+    print('\nTest MSE', test_MSE)
+
+    if verbose:
+        n_estimators_mse = pd.Series(GBRT.train_score_)
+        n_estimators_mse.index.name = 'n_estimators'
+        n_estimators_mse.plot(title='MSE')
+
+    if plot_predict:
+        if Y_scaler is not None:
+            df = pd.concat([pd.Series(Y_scaler.inverse_transform(Y_test.copy().values.reshape(-1,1)).reshape(-1,), 
+                                        index=Y_test.index), 
+                            pd.Series(Y_scaler.inverse_transform(np.array(Y_preds).reshape(-1, 1)).reshape(-1,),
+                                        index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                 format(round(test_MSE,4)))
+        else:
+            df = pd.concat([Y_test, pd.Series(Y_preds,index=Y_test.index)], axis=1)
+            df.columns = ['test','pred']
+            df.plot(figsize=(10,4), title='MSE:{}'.
+                    format(round(test_MSE,4)))
+
+    if (return_y_pred) & (return_mse):
+        return pd.Series(Y_preds,index=Y_test.index), test_MSE
+    if return_y_pred:
+        return pd.Series(Y_preds,index=Y_test.index)
+    if return_mse:
+        return test_MSE
+
+
 def csv_to_heatmap(path, figsize=(15,8), vmin=0.01, vmax=0.04,
                    save_path=work_path+'/ML - 2.1/result/plot/csv_to_heatmap.png'):
     if path.split('.')[-1]=='csv':
