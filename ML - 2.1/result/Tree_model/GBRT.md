@@ -44,6 +44,10 @@ test mse: 0.0025435651610870007
 
 ![Spain_predict](/Users/apple/Documents/ML_Project/ML - 2.1/result/Tree_model/figure_GBRT/Spain_predict.png)
 
+与单纯决策树对比：
+
+![output_10_1](/Users/apple/Documents/ML_Project/ML - 2.1/result/Tree_model/figure/output_10_1.png)
+
 ## 2. 美国数据集
 
 train index: [3001, 7002]   train_len: 4000
@@ -85,3 +89,7 @@ GradientBoostingRegressor(alpha=0.9, criterion='mse', init=None,
 test mse : 2.1468578057334267e-05
 
 ![US_predict](/Users/apple/Documents/ML_Project/ML - 2.1/result/Tree_model/figure_GBRT/US_predict.png)
+
+与单纯决策树对比：
+
+![US-1.1.2](/Users/apple/Documents/ML_Project/ML - 2.1/result/Tree_model/figure/US-1.1.2.png)
