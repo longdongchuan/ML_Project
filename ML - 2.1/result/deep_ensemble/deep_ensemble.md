@@ -17,7 +17,15 @@ test index: [14389, 15390]  test_len: 1000
 
 - **输出：**wind_power
 
-参数设置：
+**网络结构：**
+
+- 输入层节点：7
+- 隐藏层 1 节点：50
+- 隐藏层 2 节点：50
+- 输出层节点：2（mean、var）
+- cost function：NLL
+
+**参数设置：**
 
 ```python
     parser = argparse.ArgumentParser()
@@ -69,7 +77,15 @@ test index: [2000, 3001]  test_len: 1000
 
 - **输出：**wind_power
 
-参数设置：
+**网络结构：**
+
+- 输入层节点：7
+- 隐藏层 1 节点：50
+- 隐藏层 2 节点：50
+- 输出层节点：2（mean、var）
+- cost function：NLL
+
+**参数设置：**
 
 ```python
     parser = argparse.ArgumentParser()
