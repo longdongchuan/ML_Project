@@ -1,0 +1,22 @@
+# 修改备忘录
+
+## ngboost.py
+
+class NGBoost(object):
+
+    def __init__(self, Dist=Normal, Score=MLE,
+                 Base=default_linear_learner, natural_gradient=True,
+                 n_estimators=500, learning_rate=0.01, minibatch_frac=1.0,
+                 verbose=True, verbose_eval=100, tol=1e-4):
+中 Base=default_tree_learner 改为 Base=default_linear_learner
+
+## api.py
+
+三个 Base=default_tree_learner 改为 Base=default_linear_learner 
+
+## ngboost.py
+
+47 行
+ 	models = [self.Base().fit(X, g) for g in grads.T]
+改为：
+ 	models = [self.Base.fit(X, g) for g in grads.T]
