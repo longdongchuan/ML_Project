@@ -135,7 +135,8 @@ from sklearn.preprocessing import MinMaxScaler
 #     hour_num=1, transform='sin+cos',
 #     train_index=[6426,8427],
 #     test_index=[14389,15390],
-#     return_y_scaler=True)
+#     return_y_scaler=True,
+#     box_cox=False)
 def get_data(hour_num=0, 
              train_index=[6426,10427],
              test_index=[14389,15390],
@@ -144,7 +145,8 @@ def get_data(hour_num=0,
              scale=True,
              return_y_scaler=False,
              path = work_path+'/ML - 2.1/Data/国际西班牙数据.csv',
-             verbose=True):
+             verbose=True, 
+             box_cox=False):
     data= load_data(path, add_time=True, describe=False)
 
     if transform==None:
@@ -208,11 +210,18 @@ def get_data(hour_num=0,
     
     if verbose:
         print('---- Spain dataset ----')
-        print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={})\n'\
-            .format(hour_num, transform, drop_time, scale))
+        print('get_data(hour_num={}, transform=\'{}\', drop_time={}, scale={}, box_cox={})\n'\
+            .format(hour_num, transform, drop_time, scale, box_cox))
         print('Input space:',X_train.columns)
         print('train index:', train_index, 'train_len:', len(X_train))
         print('test index:', test_index, 'test_len:', len(X_test))
+
+    if box_cox:
+        Y_train = pd.Series(np.log(Y_train+0.01), index=Y_train.index)
+        Y_test = pd.Series(np.log(Y_test+0.01), index=Y_test.index)
+        if verbose:
+            print(' Y data had been applied Box-Cox transform!!!\n',
+            'Use [np.exp(Y_predict)-0.01] to reverse Box-Cox transform')
 
     if scale & return_y_scaler:
         return X_train, X_test, Y_train, Y_test, Y_Scaler
@@ -252,7 +261,8 @@ from sklearn.preprocessing import MinMaxScaler
 #     train_index=[3001,7002],
 #     test_index=[2000,3001],
 #     return_y_scaler=True,
-#     drop_else=True)
+#     drop_else=True, 
+#     box_cos=False)
 def get_data2(hour_num=0, 
              train_index=[3001,7002],
              test_index=[2000,3001],
@@ -263,7 +273,8 @@ def get_data2(hour_num=0,
              return_y_scaler=False,
              path = work_path+'/ML - 2.1/Data/相近8个地点2012年数据/20738-2012.csv',
              verbose=True,
-             drop_minute=False):
+             drop_minute=False,
+             box_cox=False):
     # transform: can be one of [None, 'sin', 'cos', 'sin+cos', 
     #                           'ws*sin(wd)', 'ws*cos(wd)', 'ws*sin(wd)+ws*cos(wd)']
     
@@ -346,12 +357,19 @@ def get_data2(hour_num=0,
     
     if verbose:
         print('---- US dataset ----')
-        print('get_data2(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={})\n'\
-            .format(hour_num, transform, drop_time, drop_else, scale))
+        print('get_data2(hour_num={}, transform=\'{}\', drop_time={}, drop_esle={}, scale={}), box_cox={}\n'\
+            .format(hour_num, transform, drop_time, drop_else, scale, box_cox))
         print('Data:', path.split('/')[-2:],'\n')
         print('Input space:',X_train.columns)
         print('train index:', train_index, 'train_len:', len(X_train))
         print('test index:', test_index, 'test_len:', len(X_test))
+
+    if box_cox:
+        Y_train = pd.Series(np.log(Y_train+0.01), index=Y_train.index)
+        Y_test = pd.Series(np.log(Y_test+0.01), index=Y_test.index)
+    if verbose:
+        print('Y data had been applied Box-Cox transform!!!\n',
+        'Use [np.exp(Y_predict)-0.01] to reverse Box-Cox transform')
 
     if scale & return_y_scaler:
         return X_train, X_test, Y_train, Y_test, Y_Scaler
