@@ -2,16 +2,31 @@ import numpy as np
 import sys
 sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
 from utils import get_data, get_data2
+from simple_esn.simple_esn import SimpleESN
+from sklearn.utils import check_random_state
 
 class DataLoader_Spain():
 
-    def __init__(self, args):
+    def __init__(self, args, esn_param=None, box_cox=False):
 
         X_train, X_test, Y_train, Y_test = get_data(
             hour_num=1, transform='sin+cos',
             train_index=[6426,8427],
             test_index=[14389,15390],
-            return_y_scaler=False)
+            return_y_scaler=False, 
+            box_cox=box_cox)
+        
+        if esn_param is not None:
+            ESN = SimpleESN(
+                n_readout=esn_param['n_readout'],
+                n_components=esn_param['n_components'],
+                damping=esn_param['damping'],
+                weight_scaling=esn_param['weight_scaling'], 
+                discard_steps=esn_param['discard_steps'], 
+                random_state=check_random_state(esn_param['random_state']))
+            ESN.fit(X_train)
+            X_train = ESN.transform(X_train)
+            X_test = ESN.transform(X_test)
 
         self.xs = np.array(X_train, dtype=np.float32)
         self.ys = np.array(Y_train, dtype=np.float32).reshape(len(Y_train), 1)
@@ -48,14 +63,27 @@ class DataLoader_Spain():
 
 class DataLoader_US():
 
-    def __init__(self, args):
+    def __init__(self, args, esn_param=None, box_cox=False):
         
         X_train, X_test, Y_train, Y_test= get_data2(
             hour_num=1, transform='sin+cos',
             train_index=[3001,7002],
             test_index=[2000,3001],
             return_y_scaler=False,
-            drop_else=True)
+            drop_else=True, 
+            box_cox=box_cox)
+        
+        if esn_param is not None:
+            ESN = SimpleESN(
+                n_readout=esn_param['n_readout'],
+                n_components=esn_param['n_components'],
+                damping=esn_param['damping'],
+                weight_scaling=esn_param['weight_scaling'], 
+                discard_steps=esn_param['discard_steps'], 
+                random_state=check_random_state(esn_param['random_state']))
+            ESN.fit(X_train)
+            X_train = ESN.transform(X_train)
+            X_test = ESN.transform(X_test)
 
         self.xs = np.array(X_train, dtype=np.float32)
         self.ys = np.array(Y_train, dtype=np.float32).reshape(len(Y_train), 1)
