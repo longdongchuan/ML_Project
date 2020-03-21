@@ -220,7 +220,7 @@ def get_data(hour_num=0,
         Y_train = pd.Series(np.log(Y_train+0.01), index=Y_train.index)
         Y_test = pd.Series(np.log(Y_test+0.01), index=Y_test.index)
         if verbose:
-            print('\nY data had been applied Box-Cox transform!!!)
+            print('\nY data had been applied Box-Cox transform!!!')
             print('Use [np.exp(Y_predict)-0.01] to reverse Box-Cox transform')
 
     if scale & return_y_scaler:
@@ -368,7 +368,7 @@ def get_data2(hour_num=0,
         Y_train = pd.Series(np.log(Y_train+0.01), index=Y_train.index)
         Y_test = pd.Series(np.log(Y_test+0.01), index=Y_test.index)
     if verbose:
-        print('\nY data had been applied Box-Cox transform!!!)
+        print('\nY data had been applied Box-Cox transform!!!')
         print('Use [np.exp(Y_predict)-0.01] to reverse Box-Cox transform')
 
     if scale & return_y_scaler:
