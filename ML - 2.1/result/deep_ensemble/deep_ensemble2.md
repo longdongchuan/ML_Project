@@ -62,7 +62,7 @@ esn_param = {'n_readout': 1000,
 
 $$wp_{pred} = exp(f(X,wp_{ln}))-0.01$$
 
-[预测方差](https://www.zhihu.com/question/350591390)：$$Var(wp_{ln}) = e^{2\mu+\sigma^2}(e^{\sigma^2}-1)$$
+[预测方差](https://www.zhihu.com/question/350591390)：$$Var(wp_{pred}) = e^{2\mu+\sigma^2}(e^{\sigma^2}-1)$$
 
 
 
@@ -84,6 +84,8 @@ test index: [14389, 15390]  test_len: 1000
 box-cox 转换前后数据分布：
 
 <img src="/Users/apple/Documents/ML_Project/ML - 2.1/result/deep_ensemble/figure2/Spain_box_cox.png" alt="Spain_box_cox" style="zoom:40%;" />
+
+结果：
 
 |            | 无 esn                                                       | 有 esn                                                       |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
