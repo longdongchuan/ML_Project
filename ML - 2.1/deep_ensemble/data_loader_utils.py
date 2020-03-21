@@ -11,7 +11,7 @@ class DataLoader_Spain():
 
         X_train, X_test, Y_train, Y_test = get_data(
             hour_num=1, transform='sin+cos',
-            train_index=[6426,8427],
+            train_index=[6426,10427],
             test_index=[14389,15390],
             return_y_scaler=False, 
             box_cox=box_cox)
@@ -27,6 +27,7 @@ class DataLoader_Spain():
             ESN.fit(X_train)
             X_train = ESN.transform(X_train)
             X_test = ESN.transform(X_test)
+            print('ESN param:', esn_param)
 
         self.xs = np.array(X_train, dtype=np.float32)
         self.ys = np.array(Y_train, dtype=np.float32).reshape(len(Y_train), 1)
@@ -84,6 +85,7 @@ class DataLoader_US():
             ESN.fit(X_train)
             X_train = ESN.transform(X_train)
             X_test = ESN.transform(X_test)
+            print('ESN param:', esn_param)
 
         self.xs = np.array(X_train, dtype=np.float32)
         self.ys = np.array(Y_train, dtype=np.float32).reshape(len(Y_train), 1)
