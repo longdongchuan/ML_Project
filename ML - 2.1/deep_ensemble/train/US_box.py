@@ -5,12 +5,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import ipdb
 
+import sys
+sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/deep_ensemble')
 from model import MLPGaussianRegressor
 from model import MLPDropoutGaussianRegressor
 
-from data_loader_utils import DataLoader_Spain
-save_figure_path = '/Users/apple/Documents/ML_Project/ML - 2.1/deep_ensemble/figure/Spain_result.png'
-save_csv_path = '/Users/apple/Documents/ML_Project/ML - 2.1/deep_ensemble/reslut/Spain_test_dist.csv'
+from data_loader_utils import DataLoader_US
+save_figure_path = '/Users/apple/Documents/ML_Project/ML - 2.1/deep_ensemble/figure/US_result.png'
+save_csv_path = '/Users/apple/Documents/ML_Project/ML - 2.1/deep_ensemble/result/US_box.csv'
 
 def main():
 
@@ -42,8 +44,15 @@ def main():
     # Dropout rate (keep prob)
     parser.add_argument('--keep_prob', type=float, default=0.8,
                         help='Keep probability for dropout')
+    
+    # deep_ensemble param
     args = parser.parse_args()
-    train_ensemble(args)
+    # esn_param
+    esn_param = None
+    # box-cox transform
+    box_cox=True
+    # start train
+    train_ensemble(args, esn_param=esn_param, box_cox=box_cox)
 
 
 def ensemble_mean_var(ensemble, xs, sess):
@@ -63,10 +72,10 @@ def ensemble_mean_var(ensemble, xs, sess):
 
 
 
-def train_ensemble(args):
+def train_ensemble(args, esn_param=None, box_cox=False):
     
     # Input data
-    dataLoader = DataLoader_Spain(args)
+    dataLoader = DataLoader_US(args, esn_param=esn_param, box_cox=box_cox)
     # Layer sizes
     sizes = [dataLoader.xs.shape[1], 50, 50, 2]
 
