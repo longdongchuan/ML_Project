@@ -1,0 +1,28 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+import sys
+sys.path.append('/Users/apple/Documents/ML_Project/ML - 2.1/module')
+from utils import get_data, get_data2
+%config InlineBackend.figure_format='retina'
+
+import warnings
+warnings.filterwarnings("ignore")
+
+# Spain
+X_train, X_test, Y_train, Y_test = get_data(
+            hour_num=1, transform='sin+cos',
+            train_index=[6426,10427],
+            test_index=[14389,15390],
+            return_y_scaler=False, 
+            box_cox=True)
+
+# US
+X_train, X_test, Y_train, Y_test= get_data2(
+            hour_num=1, transform='sin+cos',
+            train_index=[3001,7002],
+            test_index=[2000,3001],
+            return_y_scaler=False,
+            drop_else=True, 
+            box_cox=True)
